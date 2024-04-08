@@ -5,3 +5,10 @@ Pear
 Melon
 Orange
 Kiwi
+Pet
+Had
+Cat
+Dog
+Ace
+Bow
+Fat
