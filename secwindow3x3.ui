@@ -350,6 +350,9 @@ border: 1px solid #b1b1b1;
        <property name="textAlignment">
         <set>AlignCenter</set>
        </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+       </property>
       </item>
       <item row="0" column="1">
        <property name="text">
@@ -357,6 +360,9 @@ border: 1px solid #b1b1b1;
        </property>
        <property name="textAlignment">
         <set>AlignCenter</set>
+       </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
        </property>
       </item>
       <item row="0" column="2">
@@ -366,6 +372,9 @@ border: 1px solid #b1b1b1;
        <property name="textAlignment">
         <set>AlignCenter</set>
        </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+       </property>
       </item>
       <item row="1" column="0">
        <property name="text">
@@ -373,6 +382,9 @@ border: 1px solid #b1b1b1;
        </property>
        <property name="textAlignment">
         <set>AlignCenter</set>
+       </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
        </property>
       </item>
       <item row="1" column="1">
@@ -382,6 +394,9 @@ border: 1px solid #b1b1b1;
        <property name="textAlignment">
         <set>AlignCenter</set>
        </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+       </property>
       </item>
       <item row="1" column="2">
        <property name="text">
@@ -389,6 +404,9 @@ border: 1px solid #b1b1b1;
        </property>
        <property name="textAlignment">
         <set>AlignCenter</set>
+       </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
        </property>
       </item>
       <item row="2" column="0">
@@ -398,6 +416,9 @@ border: 1px solid #b1b1b1;
        <property name="textAlignment">
         <set>AlignCenter</set>
        </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+       </property>
       </item>
       <item row="2" column="1">
        <property name="text">
@@ -406,6 +427,9 @@ border: 1px solid #b1b1b1;
        <property name="textAlignment">
         <set>AlignCenter</set>
        </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+       </property>
       </item>
       <item row="2" column="2">
        <property name="text">
@@ -413,6 +437,9 @@ border: 1px solid #b1b1b1;
        </property>
        <property name="textAlignment">
         <set>AlignCenter</set>
+       </property>
+       <property name="flags">
+        <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
        </property>
       </item>
      </widget>

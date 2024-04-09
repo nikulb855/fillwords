@@ -1,11 +1,12 @@
 import sys
 import re
 import random
-import string
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QEvent
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableWidget
 from mainmenu import Ui_Dialog
 from secwindow3x3 import Ui_secwindow3x3
 from secwindow4x4 import Ui_secwindow4x4
@@ -65,6 +66,7 @@ class GameLevels(QMainWindow):
         self.close()
         main_menu.show()
 
+
 class SecWindow3x3(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -73,13 +75,102 @@ class SecWindow3x3(QMainWindow):
         self.ui.back.clicked.connect(self.back_to_gamelevels)
         self.letters3x3 = []
         self.positions3x3 = []
+        self.letters3and6 = []
+        self.positions3and6 = []
+        self.letters4and5 = []
+        self.positions4and5 = []
+#-----------------------------------------------------------------------------------------------------------------------
+                                                #Позиции на поле
         self.variants3x3 = [
             [(1, 0), (0, 0), (0, 1), (1, 1), (1, 2), (0, 2), (2, 0), (2, 1), (2, 2)],
-            [(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
-            [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+            #[(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
+            #[(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
         ]
-        self.searchThreeLetterWords()
-#------------------------------------------------------------------------------------------------3 слова по 3 буквы в каждом
+        self.variants3and6 = [
+            [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
+           # [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+           # [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
+        ]
+        self.variants4and5 = [
+            [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0), (2, 0)]
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
+        ]
+        self.randomWordsPlace()
+#-----------------------------------------------------------------------------------------------------------------------
+                                          #Выделение ячеек
+
+        self.ui.tableWidget.itemEntered.connect(self.on_item_entered)
+        self.ui.tableWidget.setSelectionMode(QTableWidget.SingleSelection)
+        self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectItems)
+        self.mouse_pressed = False
+        self.ui.tableWidget.viewport().installEventFilter(self)
+        self.highlighted_items = []
+        self.chosen_words = []
+        for row in range(self.ui.tableWidget.rowCount()):
+            for col in range(self.ui.tableWidget.columnCount()):
+                item = self.ui.tableWidget.item(row, col)
+                if item is not None:
+                    item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
+
+    def on_item_entered(self, item):
+        if self.mouse_pressed:
+            self.highlight_item(item)
+
+    def highlight_item(self, item):
+        if item not in self.highlighted_items:
+            item.setBackground(QColor(255, 0, 0))
+            self.highlighted_items.append(item)
+
+    def reset_colors(self):
+        for item in self.highlighted_items:
+            if item.background().color() != QColor(0, 255, 0): #если зелёный, значит правильно иначе в белый
+                item.setBackground(QColor(255, 255, 255))
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.MouseButtonPress:
+            self.mouse_pressed = True
+            self.ui.tableWidget.viewport().setCursor(Qt.ClosedHandCursor)
+        elif event.type() == QEvent.MouseButtonRelease:
+            self.mouse_pressed = False
+            self.ui.tableWidget.viewport().setCursor(Qt.ArrowCursor)
+            self.check_word()
+        return super().eventFilter(source, event)
+
+    # если выбранные ячейки соответсвуют позициям расстановки слова то она окрашивается в зелёный и закрепляется
+    def check_word(self):
+        selected_positions = [(item.row(), item.column()) for item in self.highlighted_items]
+        if self.place == self.searchWords3and6:
+            if selected_positions == self.positions3and6[:3] or selected_positions == self.positions3and6[3:]:
+                for item in self.highlighted_items:
+                    item.setBackground(QColor(0, 255, 0))
+            else:
+                self.reset_colors()
+        self.highlighted_items.clear()
+#-----------------------------------------------------------------------------------------------------------------------
+                                        # Случайный выбор количества слов
+    def randomWordsPlace(self):
+        choice = random.choice(['3and6', '4and5', '3x3'])
+        if choice == '3and6':
+            self.place = self.searchWords3and6
+        elif choice == '4and5':
+            self.place = self.searchWords4and5
+        elif choice == '3x3':
+            self.place = self.searchThreeLetterWords
+
+        self.place()
+
+#-----------------------------------------------------------------------------------------------------------------------
+                                            #3 слова по 3 буквы в каждом
     def searchThreeLetterWords(self):
         with open("words.txt", 'r', encoding='utf-8') as file:
             text = file.read()
@@ -118,12 +209,82 @@ class SecWindow3x3(QMainWindow):
             item = QTableWidgetItem(self.letters3x3[i].upper())
             item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.ui.tableWidget.setItem(row, col, item)
-#-------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
+                                        #2 слова, 1-ое 3 буквы 2-ое 6 букв
+    def searchWords3and6(self):
+        with open("words.txt", 'r', encoding='utf-8') as file:
+            text = file.read()
+            three_letter_words = re.findall(r'\b\w{3}\b', text)
+            six_letter_words = re.findall(r'\b\w{6}\b', text)
+            random_three_word = self.selectRandomWords(three_letter_words)
+            random_six_word = self.selectRandomWords(six_letter_words)
+            self.delenie3and6(random_three_word, random_six_word)
+            self.zapolnenie3and6()
+    def selectRandomWords3and6(self, three_letter_words, six_letter_words):
+        if len(three_letter_words) < 1 or len(six_letter_words) < 1:
+            return ["Не хватает слов"]
+        return random.choice(three_letter_words), random.choice(six_letter_words)
 
 
+    def delenie3and6(self, three_word, six_word):
+        if len(three_word) < 1 or len(six_word) < 1:
+            print("Ошибка delenie3and6")
+            return
+        self.positions3and6 = random.choice(self.variants3and6)
+
+        self.letters3and6.extend(list(three_word[0]))
+        self.letters3and6.extend(list(six_word[0]))
+
+    def zapolnenie3and6(self):
+        if len(self.letters3and6) != len(self.positions3and6):
+            print("Количество букв и позиций должно быть одинаковым.")
+            return
+
+        for i in range(len(self.letters3and6)):
+            row, col = self.positions3and6[i]
+            item = QTableWidgetItem(self.letters3and6[i])
+            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.ui.tableWidget.setItem(row, col, item)
+
+#-----------------------------------------------------------------------------------------------------------------------
+                                            #2 слова, 1-ое 4 буквы 2-ое 5 букв
+    def searchWords4and5(self):
+        with open("words.txt", 'r', encoding='utf-8') as file:
+            text = file.read()
+            four_letter_words = re.findall(r'\b\w{4}\b', text)
+            five_letter_words = re.findall(r'\b\w{5}\b', text)
+            random_four_word = self.selectRandomWords(four_letter_words)
+            random_five_word = self.selectRandomWords(five_letter_words)
+            self.delenie4and5(random_four_word, random_five_word)
+            self.zapolnenie4and5()
+
+    def selectRandomWords4and5(self, four_letter_words, five_letter_words):
+        if len(four_letter_words) < 1 or len(five_letter_words) < 1:
+            return ["Не хватает слов"]
+        return random.choice(four_letter_words), random.choice(five_letter_words)
 
 
+    def delenie4and5(self, four_word, five_word):
+        if len(four_word) < 1 or len(five_word) < 1:
+            print("Ошибка delenie4and5")
+            return
 
+        self.positions4and5 = random.choice(self.variants4and5)
+
+        self.letters4and5.extend(list(four_word[0]))
+        self.letters4and5.extend(list(five_word[0]))
+
+    def zapolnenie4and5(self):
+        if len(self.letters4and5) != len(self.positions4and5):
+            print("Количество букв и позиций должно быть одинаковым.")
+            return
+
+        for i in range(len(self.letters4and5)):
+            row, col = self.positions4and5[i]
+            item = QTableWidgetItem(self.letters4and5[i].upper())
+            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            self.ui.tableWidget.setItem(row, col, item)
+#-----------------------------------------------------------------------------------------------------------------------
     def back_to_gamelevels(self):
         self.close()
         game_levels.show()
