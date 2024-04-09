@@ -65,10 +65,6 @@ class GameLevels(QMainWindow):
         self.close()
         main_menu.show()
 
-import random
-import re
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
-
 class SecWindow3x3(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -85,7 +81,7 @@ class SecWindow3x3(QMainWindow):
         self.searchThreeLetterWords()
 #------------------------------------------------------------------------------------------------3 слова по 3 буквы в каждом
     def searchThreeLetterWords(self):
-        with open("words.txt", 'r') as file:
+        with open("words.txt", 'r', encoding='utf-8') as file:
             text = file.read()
             three_letter_words = re.findall(r'\b\w{3}\b', text)
             random_words = self.selectRandomWords(three_letter_words)
