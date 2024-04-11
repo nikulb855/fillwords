@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>gamelevels</class>
- <widget class="QMainWindow" name="gamelevels">
+ <class>zanovo_2</class>
+ <widget class="QMainWindow" name="zanovo_2">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>370</width>
-    <height>468</height>
+    <width>374</width>
+    <height>276</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>370</width>
-    <height>468</height>
+    <width>0</width>
+    <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -108,28 +108,56 @@ QPushButton:pressed{
 background-color: #888;
 }
 
-</string>
+QLabel{
+background-color: rgb(212, 220, 255)
+border-radius: 10px;
+border: 1px solid #b1b1b1;
+}</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="20,20,20,10">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,30,30">
       <property name="spacing">
-       <number>40</number>
+       <number>20</number>
       </property>
       <property name="leftMargin">
        <number>20</number>
       </property>
       <property name="topMargin">
-       <number>30</number>
+       <number>20</number>
       </property>
       <property name="rightMargin">
        <number>20</number>
       </property>
       <property name="bottomMargin">
-       <number>30</number>
+       <number>20</number>
       </property>
       <item>
-       <widget class="QPushButton" name="play3x3">
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>УРОВЕНЬ ПРОЙДЕН</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="zanovo">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -158,88 +186,24 @@ background-color: #888;
          <string notr="true"/>
         </property>
         <property name="text">
-         <string>3x3</string>
+         <string>ЗАНОВО</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="play4x4">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>4x4</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="play5x5">
+       <widget class="QPushButton" name="glmenu">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>14</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>5x5</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="back">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>0</height>
          </size>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
         <property name="font">
          <font>
           <family>Tahoma</family>
@@ -248,14 +212,8 @@ background-color: #888;
           <bold>false</bold>
          </font>
         </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
         <property name="text">
-         <string>В ГЛАВНОЕ МЕНЮ</string>
+         <string>ВЫБОР УРОВНЯ</string>
         </property>
        </widget>
       </item>
