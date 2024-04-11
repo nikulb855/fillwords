@@ -2,8 +2,8 @@ import sys
 import re
 import random
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QEvent
-from PyQt5.QtGui import QColor
+from PyQt5.QtCore import Qt, QEvent, QMimeData
+from PyQt5.QtGui import QColor, QDrag
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableWidget
@@ -83,8 +83,8 @@ class SecWindow3x3(QMainWindow):
                                                 #Позиции на поле
         self.variants3x3 = [
             [(1, 0), (0, 0), (0, 1), (1, 1), (1, 2), (0, 2), (2, 0), (2, 1), (2, 2)],
-            #[(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
-            #[(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+            [(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
+            [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
             #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
             #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
             #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
@@ -123,38 +123,76 @@ class SecWindow3x3(QMainWindow):
                     item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
 
     def on_item_entered(self, item):
-        if self.mouse_pressed:
-            self.highlight_item(item)
 
-    def highlight_item(self, item):
-        if item not in self.highlighted_items:
+        if item.background().color() != QColor(0, 255, 0):
             item.setBackground(QColor(255, 0, 0))
             self.highlighted_items.append(item)
 
+
     def reset_colors(self):
         for item in self.highlighted_items:
-            if item.background().color() != QColor(0, 255, 0): #если зелёный, значит правильно иначе в белый
+            if item.background().color() != QColor(0, 255, 0):
                 item.setBackground(QColor(255, 255, 255))
+        self.highlighted_items.clear()
 
+                                                #Контроль перемещения мыши по полю
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
-            self.mouse_pressed = True
-            self.ui.tableWidget.viewport().setCursor(Qt.ClosedHandCursor)
+            item = self.ui.tableWidget.itemAt(event.pos())
+            if item is not None and item.background().color() == QColor(0, 255, 0):
+                self.mouse_pressed = True
+                self.previous_item_pos = event.pos()
+                return True
         elif event.type() == QEvent.MouseButtonRelease:
             self.mouse_pressed = False
-            self.ui.tableWidget.viewport().setCursor(Qt.ArrowCursor)
             self.check_word()
+            return True
+        elif event.type() == QEvent.MouseMove and self.mouse_pressed:
+            item = self.ui.tableWidget.itemAt(event.pos())
+            previous_item = self.ui.tableWidget.itemAt(self.previous_item_pos)
+            if item is not None and previous_item is not None:
+                if previous_item.background().color() != QColor(0, 255, 0) and \
+                        item.background().color() != QColor(0, 255, 0):
+                    drag = QDrag(self)
+                    mime_data = QMimeData()
+                    drag.setMimeData(mime_data)
+                    drag.exec_(Qt.MoveAction)
+                else:
+                    return True
+            else:
+                return True
         return super().eventFilter(source, event)
 
     # если выбранные ячейки соответсвуют позициям расстановки слова то она окрашивается в зелёный и закрепляется
     def check_word(self):
         selected_positions = [(item.row(), item.column()) for item in self.highlighted_items]
+
+        #Для расстановки 2 слов 5 и 6 букв
         if self.place == self.searchWords3and6:
             if selected_positions == self.positions3and6[:3] or selected_positions == self.positions3and6[3:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
+
+        #Для расстановки 3 слов по 3 буквы
+        elif self.place == self.searchThreeLetterWords:
+            if selected_positions == self.positions3x3[:3] or \
+                    selected_positions == self.positions3x3[3:6] or \
+                    selected_positions == self.positions3x3[6:]:
+                for item in self.highlighted_items:
+                    item.setBackground(QColor(0, 255, 0))
+            else:
+                self.reset_colors()
+
+        #Для расстановки 2 слов 4 и 5 букв
+        elif self.place == self.searchWords4and5:
+            if selected_positions == self.positions4and5[:4] or selected_positions == self.positions4and5[4:]:
+                for item in self.highlighted_items:
+                    item.setBackground(QColor(0, 255, 0))
+            else:
+                self.reset_colors()
+
         self.highlighted_items.clear()
 #-----------------------------------------------------------------------------------------------------------------------
                                         # Случайный выбор количества слов
@@ -206,7 +244,7 @@ class SecWindow3x3(QMainWindow):
 
         for i in range(len(self.letters3x3)):
             row, col = self.positions3x3[i]
-            item = QTableWidgetItem(self.letters3x3[i].upper())
+            item = QTableWidgetItem(self.letters3x3[i])
             item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
@@ -281,7 +319,7 @@ class SecWindow3x3(QMainWindow):
 
         for i in range(len(self.letters4and5)):
             row, col = self.positions4and5[i]
-            item = QTableWidgetItem(self.letters4and5[i].upper())
+            item = QTableWidgetItem(self.letters4and5[i])
             item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
