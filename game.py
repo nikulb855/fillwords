@@ -1,7 +1,6 @@
 import sys
 import re
 import random
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QEvent, QMimeData
 from PyQt5.QtGui import QColor, QDrag
 from PyQt5.QtCore import *
@@ -14,6 +13,7 @@ from secwindow5x5 import Ui_secwindow5x5
 from gamelevels import Ui_gamelevels
 from rules import Ui_rules
 from zanovo import Ui_zanovo_2
+from rating import Ui_Rating
 class MainMenu(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -22,9 +22,21 @@ class MainMenu(QMainWindow):
         self.ui.play.clicked.connect(self.open_gamelevels)
         self.ui.rules.clicked.connect(self.open_rules)
         self.ui.exit.clicked.connect(self.close)
+        self.ui.rating.clicked.connect(self.open_ratingmenu)
+        self.nickname = ""
+    def open_ratingmenu(self):
+        self.rating = RatingMenu()
+        self.rating.show()
+        self.hide()
+
+    def save_nickname(self):
+        self.nickname = self.ui.nickname.text()
+        with open('nicknames.txt', 'a') as file:
+            file.write(self.nickname + '\n')
 
     def open_gamelevels(self):
-        self.game_levels = GameLevels()
+        self.save_nickname()
+        self.game_levels = GameLevels(self.nickname)
         self.game_levels.show()
         self.hide()
 
@@ -38,8 +50,20 @@ class RulesWindow(QMainWindow):
         self.ui = Ui_rules()
         self.ui.setupUi(self)
 
-class GameLevels(QMainWindow):
+class RatingMenu(QMainWindow):
     def __init__(self):
+        super().__init__()
+        self.ui = Ui_Rating()
+        self.ui.setupUi(self)
+        self.nicknamesfromtxt()
+
+    def nicknamesfromtxt(self):
+        with open('rating.txt', 'r') as file:
+            nicknames = file.readlines()
+        self.ui.label.setText('\n'.join(nicknames))
+
+class GameLevels(QMainWindow):
+    def __init__(self, nickname):
         super().__init__()
         self.ui = Ui_gamelevels()
         self.ui.setupUi(self)
@@ -47,9 +71,9 @@ class GameLevels(QMainWindow):
         self.ui.play3x3.clicked.connect(self.open_secwindow3x3)
         self.ui.play4x4.clicked.connect(self.open_secwindow4x4)
         self.ui.play5x5.clicked.connect(self.open_secwindow5x5)
-
+        self.nickname = nickname
     def open_secwindow3x3(self):
-        self.sec_window3x3 = SecWindow3x3()
+        self.sec_window3x3 = SecWindow3x3(self.nickname)
         self.sec_window3x3.show()
         self.hide()
 
@@ -67,21 +91,23 @@ class GameLevels(QMainWindow):
         main_menu.show()
 
 class Zanovo3x3(QMainWindow):
-    def __init__(self):
+    def __init__(self, nickname):
         super().__init__()
         self.ui = Ui_zanovo_2()
         self.ui.setupUi(self)
         self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
         self.ui.zanovo.clicked.connect(self.open_secwindow3x3)
+        self.ui.exit.clicked.connect(self.close)
+        self.nickname = nickname
 
     def back_to_mainmenu(self):
-        self.gamelevels = GameLevels()
+        self.gamelevels = GameLevels(self.nickname)
         self.gamelevels.show()
         self.close()
 
 
     def open_secwindow3x3(self):
-        self.sec_window3x3 = SecWindow3x3()
+        self.sec_window3x3 = SecWindow3x3(self.nickname)
         self.sec_window3x3.show()
         self.close()
 class Zanovo4x4(QMainWindow):
@@ -91,9 +117,9 @@ class Zanovo4x4(QMainWindow):
         self.ui.setupUi(self)
         self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
         self.ui.zanovo.clicked.connect(self.open_secwindow4x4)
-
+        self.ui.exit.clicked.connect(self.close)
     def back_to_mainmenu(self):
-        self.gamelevels = GameLevels()
+        self.gamelevels = GameLevels(self.nickname)
         self.gamelevels.show()
         self.close()
 
@@ -109,7 +135,7 @@ class Zanovo5x5(QMainWindow):
         self.ui.setupUi(self)
         self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
         self.ui.zanovo.clicked.connect(self.open_secwindow5x5)
-
+        self.ui.exit.clicked.connect(self.close)
     def back_to_mainmenu(self):
         self.gamelevels = GameLevels()
         self.gamelevels.show()
@@ -120,7 +146,7 @@ class Zanovo5x5(QMainWindow):
         self.sec_window5x5.show()
         self.close()
 class SecWindow3x3(QMainWindow):
-    def __init__(self):
+    def __init__(self, nickname):
         super().__init__()
         self.ui = Ui_secwindow3x3()
         self.ui.setupUi(self)
@@ -168,7 +194,8 @@ class SecWindow3x3(QMainWindow):
         self.ui.tableWidget.viewport().installEventFilter(self)
         self.highlighted_items = []
         self.chosen_words = []
-        self.raiting = 0
+        self.score = 0
+        self.nickname = nickname
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
@@ -187,12 +214,32 @@ class SecWindow3x3(QMainWindow):
                 item = self.ui.tableWidget.item(row, col)
                 if item.background().color() != QColor(0, 255, 0):
                     return
-        self.raiting += 1
-        self.ui.countlevel.setText(str(self.raiting))
+        self.score += 1
+        self.update_rating()
         self.open_zanovo3x3()
 
+    def update_rating(self):
+        with open('rating.txt', 'r') as file:
+            lines = file.readlines()
+
+        updated_lines = []
+        found = False
+        for line in lines:
+            nickname, score = line.strip().split(':')
+            if nickname == self.nickname:
+                updated_lines.append(f"{nickname}:{int(score) + self.score}\n")
+                found = True
+            else:
+                updated_lines.append(line)
+
+        if not found:
+            updated_lines.append(f"{self.nickname}:{self.score}\n")
+
+        with open('rating.txt', 'w') as file:
+            file.writelines(updated_lines)
+
     def open_zanovo3x3(self):
-        self.zanovo3x3 = Zanovo3x3()
+        self.zanovo3x3 = Zanovo3x3(self.nickname)
         self.zanovo3x3.show()
         self.hide()
 
@@ -928,7 +975,7 @@ class SecWindow5x5(QMainWindow):
              (3, 4), (4, 4), (4, 3), (3, 3), (2, 3),
              (2, 4), (1, 0), (0, 0), (0, 1), (0, 2),
              (0, 3), (0, 4), (1, 4), (4, 0), (4, 1),
-             (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)]
+             (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)],
         ]
         self.variants5578 = [
             [(3, 3), (2, 3), (1, 3), (1, 2), (1, 1),
@@ -975,6 +1022,7 @@ class SecWindow5x5(QMainWindow):
                     return
         self.raiting += 3
         self.open_zanovo5x5()
+        print(self.raiting)
 
     def open_zanovo5x5(self):
         self.zanovo5x5 = Zanovo5x5()
@@ -1334,11 +1382,11 @@ class SecWindow5x5(QMainWindow):
 
 
     def back_to_gamelevels(self):
+        self.game_levels = GameLevels(self.nickname)
+        self.game_levels.show()
         self.close()
-        game_levels.show()
 
 app = QApplication(sys.argv)
 main_menu = MainMenu()
-game_levels = GameLevels()
 main_menu.show()
 sys.exit(app.exec_())

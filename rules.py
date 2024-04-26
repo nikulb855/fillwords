@@ -50,19 +50,13 @@ class Ui_rules(object):
 "border: 1px solid #b1b1b1;\n"
 "}\n"
 "\n"
-"QLineEdit{\n"
+"QTextEdit{\n"
 "background-color: white;\n"
 "border-radius: 10px;\n"
 "border: 1px solid #b1b1b1;\n"
 "}\n"
 "\n"
-"QPushButton:hover{\n"
-"background-color: rgb(208, 208, 208); \n"
-"}\n"
 "\n"
-"QPushButton:pressed{\n"
-"background-color: #888;\n"
-"}\n"
 "\n"
 "")
         self.centralwidget.setObjectName("centralwidget")
@@ -72,27 +66,10 @@ class Ui_rules(object):
         self.verticalLayout.setContentsMargins(20, 30, 20, 30)
         self.verticalLayout.setSpacing(20)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.sssss = QtWidgets.QLineEdit(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.sssss.sizePolicy().hasHeightForWidth())
-        self.sssss.setSizePolicy(sizePolicy)
-        self.sssss.setMinimumSize(QtCore.QSize(0, 0))
-        self.sssss.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        font = QtGui.QFont()
-        font.setFamily("Tahoma")
-        font.setPointSize(14)
-        self.sssss.setFont(font)
-        self.sssss.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-        self.sssss.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.sssss.setStyleSheet("")
-        self.sssss.setFrame(False)
-        self.sssss.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.sssss.setAlignment(QtCore.Qt.AlignCenter)
-        self.sssss.setClearButtonEnabled(False)
-        self.sssss.setObjectName("sssss")
-        self.verticalLayout.addWidget(self.sssss)
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.textEdit.setObjectName("textEdit")
+        self.verticalLayout.addWidget(self.textEdit)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         rules.setCentralWidget(self.centralwidget)
 
@@ -102,6 +79,10 @@ class Ui_rules(object):
     def retranslateUi(self, rules):
         _translate = QtCore.QCoreApplication.translate
         rules.setWindowTitle(_translate("rules", "Филворды"))
-        self.sssss.setText(_translate("rules", ""))
-
+        self.textEdit.setHtml(_translate("rules", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:28pt;\">ПРАВИЛА</span></p>\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:28pt;\"><br /></p></body></html>"))
 
