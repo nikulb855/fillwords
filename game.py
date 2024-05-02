@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QEvent, QMimeData
 from PyQt5.QtGui import QColor, QDrag
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QTableWidget, QMessageBox
 from mainmenu import Ui_Dialog
 from secwindow3x3 import Ui_secwindow3x3
 from secwindow4x4 import Ui_secwindow4x4
@@ -23,15 +23,41 @@ class MainMenu(QMainWindow):
         self.ui.rules.clicked.connect(self.open_rules)
         self.ui.exit.clicked.connect(self.close)
         self.ui.rating.clicked.connect(self.open_ratingmenu)
+        self.ui.nickname.textChanged.connect(self.on_text_edited)
         self.nickname = ""
+        self.max_length = 12
+    def on_text_edited(self, text):
+        #фильтрация ввода
+        filtered_text = re.sub(r'[^\w_]', '', text)
+
+        if len(filtered_text) > self.max_length:
+            QMessageBox.warning(self, "Ошибка", f"Превышен лимит символов. Максимум {self.max_length}.")
+            filtered_text = filtered_text[:self.max_length]
+
+        if text != filtered_text:
+            self.ui.nickname.setText(filtered_text)
+            self.ui.nickname.setCursorPosition(len(filtered_text))
     def open_ratingmenu(self):
         self.rating = RatingMenu()
         self.rating.show()
         self.hide()
 
     def save_nickname(self):
-        self.nickname = self.ui.nickname.text()
-        with open('nicknames.txt', 'a') as file:
+    #получение никнейма из поля для ввода никнейма
+        self.nickname = self.ui.nickname.text().strip()
+
+    #если поле пустое то происходит выход из функции без изменений
+        if not self.nickname:
+            return
+    #проверка существующих никнеймов
+        with open('nicknames.txt', 'r', encoding='utf8') as file:
+            nicknames = set(line.strip() for line in file)
+
+    #если никнейм уже существует то повторной записи никнейма не будет
+        if self.nickname in nicknames:
+            return
+    #добавление никнейма в текстовый файл
+        with open('nicknames.txt', 'a', encoding='utf8') as file:
             file.write(self.nickname + '\n')
 
     def open_gamelevels(self):
@@ -56,11 +82,40 @@ class RatingMenu(QMainWindow):
         self.ui = Ui_Rating()
         self.ui.setupUi(self)
         self.nicknamesfromtxt()
-
+        self.ui.back.clicked.connect(self.back_to_mainmenu)
+        
+    def back_to_mainmenu(self):
+        self.menu = MainMenu()
+        self.menu.show()
+        self.hide()
     def nicknamesfromtxt(self):
-        with open('rating.txt', 'r') as file:
-            nicknames = file.readlines()
+        with open('rating.txt', 'r', encoding='utf8') as file:
+            lines = file.readlines()
+        ratings = []
+        for line in lines:
+            nickname, score = line.strip().split(':')
+            ratings.append((nickname, int(score)))
+
+        ratings.sort(key=lambda x: x[1], reverse=True)
+
+        nicknames = ["Лидирует {} с {} {}".format(ratings[0][0], ratings[0][1], self.sklonenielider(ratings[0][1]))]
+        nicknames += ["{}: {} {}".format(nickname, score, self.sklonenie(score)) for nickname, score in
+                      ratings[1:]]
         self.ui.label.setText('\n'.join(nicknames))
+
+    def sklonenielider(self, score):
+        if score % 10 == 1 and score % 100 != 11:
+            return "баллом"
+        else:
+            return "баллами"
+
+    def sklonenie(self, score):
+        if score % 10 == 1 and score % 100 != 11:
+            return "балл"
+        elif 2 <= score % 10 <= 4 and (score % 100 < 10 or score % 100 > 20):
+            return "балла"
+        else:
+            return "баллов"
 
 class GameLevels(QMainWindow):
     def __init__(self, nickname):
@@ -68,83 +123,72 @@ class GameLevels(QMainWindow):
         self.ui = Ui_gamelevels()
         self.ui.setupUi(self)
         self.ui.back.clicked.connect(self.back_to_mainmenu)
-        self.ui.play3x3.clicked.connect(self.open_secwindow3x3)
-        self.ui.play4x4.clicked.connect(self.open_secwindow4x4)
-        self.ui.play5x5.clicked.connect(self.open_secwindow5x5)
+        self.ui.play3x3.clicked.connect(lambda: self.open_secwindow(1))
+        self.ui.play4x4.clicked.connect(lambda: self.open_secwindow(2))
+        self.ui.play5x5.clicked.connect(lambda: self.open_secwindow(3))
         self.nickname = nickname
-    def open_secwindow3x3(self):
-        self.sec_window3x3 = SecWindow3x3(self.nickname)
-        self.sec_window3x3.show()
+        self.selected_level = None
+
+    def open_secwindow(self, level):
+        if level == 1:
+            self.sec_window = SecWindow3x3(self.nickname)
+        elif level == 2:
+            self.sec_window = SecWindow4x4(self.nickname)
+        elif level == 3:
+            self.sec_window = SecWindow5x5(self.nickname)
+
+        self.sec_window.show()
         self.hide()
 
-    def open_secwindow4x4(self):
-        self.sec_window4x4 = SecWindow4x4()
-        self.sec_window4x4.show()
-        self.hide()
-    def open_secwindow5x5(self):
-        self.sec_window5x5 = SecWindow5x5()
-        self.sec_window5x5.show()
-        self.hide()
-
+        self.selected_level = level
     def back_to_mainmenu(self):
-        self.close()
+        self.hide()
         main_menu.show()
 
-class Zanovo3x3(QMainWindow):
-    def __init__(self, nickname):
+class Zanovo(QMainWindow):
+    def __init__(self, nickname, selected_level):
         super().__init__()
         self.ui = Ui_zanovo_2()
         self.ui.setupUi(self)
         self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
-        self.ui.zanovo.clicked.connect(self.open_secwindow3x3)
+        self.ui.zanovo.clicked.connect(self.open_secwindow)
         self.ui.exit.clicked.connect(self.close)
         self.nickname = nickname
+        self.level = selected_level
+        self.update_rating_label()
 
+
+    def update_rating_label(self):
+        word = ''
+        with open('rating.txt', 'r', encoding='utf8') as file:
+            for line in file:
+                nickname, score = line.strip().split(':')
+                if nickname == self.nickname:
+                    score = int(score)
+                    #определяю как использовать слово балл :)
+                    if score % 10 == 1 and score % 100 != 11:
+                        word = 'балл'
+                    elif 2 <= score % 10 <= 4 and (score % 100 < 10 or score % 100 > 20):
+                        word = 'балла'
+                    else:
+                        word = 'баллов'
+                    break
+        if word:
+            self.ui.label_2.setText(f"Сейчас у вас уже {score} {word}!")
     def back_to_mainmenu(self):
         self.gamelevels = GameLevels(self.nickname)
         self.gamelevels.show()
-        self.close()
+        self.hide()
 
-
-    def open_secwindow3x3(self):
-        self.sec_window3x3 = SecWindow3x3(self.nickname)
-        self.sec_window3x3.show()
-        self.close()
-class Zanovo4x4(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_zanovo_2()
-        self.ui.setupUi(self)
-        self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
-        self.ui.zanovo.clicked.connect(self.open_secwindow4x4)
-        self.ui.exit.clicked.connect(self.close)
-    def back_to_mainmenu(self):
-        self.gamelevels = GameLevels(self.nickname)
-        self.gamelevels.show()
-        self.close()
-
-    def open_secwindow4x4(self):
-        self.sec_window4x4 = SecWindow4x4()
-        self.sec_window4x4.show()
-        self.close()
-
-class Zanovo5x5(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_zanovo_2()
-        self.ui.setupUi(self)
-        self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
-        self.ui.zanovo.clicked.connect(self.open_secwindow5x5)
-        self.ui.exit.clicked.connect(self.close)
-    def back_to_mainmenu(self):
-        self.gamelevels = GameLevels()
-        self.gamelevels.show()
-        self.close()
-
-    def open_secwindow5x5(self):
-        self.sec_window5x5 = SecWindow5x5()
-        self.sec_window5x5.show()
-        self.close()
+    def open_secwindow(self):
+        if self.level == 1:
+            self.sec_window = SecWindow3x3(self.nickname)
+        elif self.level == 2:
+            self.sec_window = SecWindow4x4(self.nickname)
+        elif self.level == 3:
+            self.sec_window = SecWindow5x5(self.nickname)
+        self.sec_window.show()
+        self.hide()
 class SecWindow3x3(QMainWindow):
     def __init__(self, nickname):
         super().__init__()
@@ -196,6 +240,7 @@ class SecWindow3x3(QMainWindow):
         self.chosen_words = []
         self.score = 0
         self.nickname = nickname
+        self.selected_level = 1
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
@@ -219,7 +264,10 @@ class SecWindow3x3(QMainWindow):
         self.open_zanovo3x3()
 
     def update_rating(self):
-        with open('rating.txt', 'r') as file:
+        if not self.nickname:
+            return
+
+        with open('rating.txt', 'r', encoding='utf8') as file:
             lines = file.readlines()
 
         updated_lines = []
@@ -235,11 +283,11 @@ class SecWindow3x3(QMainWindow):
         if not found:
             updated_lines.append(f"{self.nickname}:{self.score}\n")
 
-        with open('rating.txt', 'w') as file:
+        with open('rating.txt', 'w', encoding='utf8') as file:
             file.writelines(updated_lines)
 
     def open_zanovo3x3(self):
-        self.zanovo3x3 = Zanovo3x3(self.nickname)
+        self.zanovo3x3 = Zanovo(self.nickname, self.selected_level)
         self.zanovo3x3.show()
         self.hide()
 
@@ -428,11 +476,12 @@ class SecWindow3x3(QMainWindow):
             self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
     def back_to_gamelevels(self):
+        self.gamelevels = GameLevels(self.nickname)
+        self.gamelevels.show()
         self.close()
-        game_levels.show()
 
 class SecWindow4x4(QMainWindow):
-    def __init__(self):
+    def __init__(self, nickname):
         super().__init__()
         self.ui = Ui_secwindow4x4()
         self.ui.setupUi(self)
@@ -492,7 +541,9 @@ class SecWindow4x4(QMainWindow):
         self.ui.tableWidget.viewport().installEventFilter(self)
         self.highlighted_items = []
         self.chosen_words = []
-        self.raiting = 0
+        self.score = 0
+        self.nickname = nickname
+        self.selected_level = 2
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
@@ -510,12 +561,35 @@ class SecWindow4x4(QMainWindow):
                 item = self.ui.tableWidget.item(row, col)
                 if item.background().color() != QColor(0, 255, 0):
                     return
-        self.raiting += 2
-        self.ui.countlevel.setText(str(self.raiting))
+        self.score += 2
+        self.update_rating()
         self.open_zanovo4x4()
 
+    def update_rating(self):
+        if not self.nickname:
+            return
+
+        with open('rating.txt', 'r', encoding='utf8') as file:
+            lines = file.readlines()
+
+        updated_lines = []
+        found = False
+        for line in lines:
+            nickname, score = line.strip().split(':')
+            if nickname == self.nickname:
+                updated_lines.append(f"{nickname}:{int(score) + self.score}\n")
+                found = True
+            else:
+                updated_lines.append(line)
+
+        if not found:
+            updated_lines.append(f"{self.nickname}:{self.score}\n")
+
+        with open('rating.txt', 'w', encoding='utf8') as file:
+            file.writelines(updated_lines)
+
     def open_zanovo4x4(self):
-        self.zanovo4x4 = Zanovo4x4()
+        self.zanovo4x4 = Zanovo(self.nickname, self.selected_level)
         self.zanovo4x4.show()
         self.hide()
 
@@ -928,11 +1002,12 @@ class SecWindow4x4(QMainWindow):
             self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
     def back_to_gamelevels(self):
+        self.gamelevels = GameLevels(self.nickname)
+        self.gamelevels.show()
         self.close()
-        game_levels.show()
 
 class SecWindow5x5(QMainWindow):
-    def __init__(self):
+    def __init__(self, nickname):
         super().__init__()
         self.ui = Ui_secwindow5x5()
         self.ui.setupUi(self)
@@ -1002,7 +1077,9 @@ class SecWindow5x5(QMainWindow):
         self.ui.tableWidget.viewport().installEventFilter(self)
         self.highlighted_items = []
         self.chosen_words = []
-        self.raiting = 0
+        self.score = 0
+        self.nickname = nickname
+        self.selected_level = 3
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
@@ -1020,12 +1097,36 @@ class SecWindow5x5(QMainWindow):
                 item = self.ui.tableWidget.item(row, col)
                 if item.background().color() != QColor(0, 255, 0):
                     return
-        self.raiting += 3
+        self.score += 3
+        self.update_rating()
         self.open_zanovo5x5()
-        print(self.raiting)
+
+
+    def update_rating(self):
+        if not self.nickname:
+            return
+
+        with open('rating.txt', 'r', encoding='utf8') as file:
+            lines = file.readlines()
+
+        updated_lines = []
+        found = False
+        for line in lines:
+            nickname, score = line.strip().split(':')
+            if nickname == self.nickname:
+                updated_lines.append(f"{nickname}:{int(score) + self.score}\n")
+                found = True
+            else:
+                updated_lines.append(line)
+
+        if not found:
+            updated_lines.append(f"{self.nickname}:{self.score}\n")
+
+        with open('rating.txt', 'w', encoding='utf8') as file:
+            file.writelines(updated_lines)
 
     def open_zanovo5x5(self):
-        self.zanovo5x5 = Zanovo5x5()
+        self.zanovo5x5 = Zanovo(self.nickname, self.selected_level)
         self.zanovo5x5.show()
         self.hide()
 

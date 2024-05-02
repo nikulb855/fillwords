@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Rating(object):
     def setupUi(self, Rating):
         Rating.setObjectName("Rating")
-        Rating.resize(675, 743)
+        Rating.resize(432, 470)
         Rating.setMinimumSize(QtCore.QSize(370, 468))
         Rating.setMaximumSize(QtCore.QSize(16777215, 16777215))
         Rating.setBaseSize(QtCore.QSize(2, 0))
@@ -64,14 +64,32 @@ class Ui_Rating(object):
 "background-color: #888;\n"
 "}\n"
 "\n"
-"")
+"QLabel{\n"
+"background-color: rgb(212, 220, 255)\n"
+"border-radius: 10px;\n"
+"border: 1px solid #b1b1b1;\n"
+"}\n"
+"\n"
+"QTextEdit {\n"
+"    text-align: center;\n"
+"}")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.label = QtWidgets.QTextEdit(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.label.setFont(font)
+        self.label.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)
+        self.back = QtWidgets.QPushButton(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.back.setFont(font)
+        self.back.setIconSize(QtCore.QSize(28, 25))
+        self.back.setObjectName("back")
+        self.verticalLayout_2.addWidget(self.back)
         Rating.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Rating)
@@ -80,7 +98,12 @@ class Ui_Rating(object):
     def retranslateUi(self, Rating):
         _translate = QtCore.QCoreApplication.translate
         Rating.setWindowTitle(_translate("Rating", "Филворды"))
-        self.label.setText(_translate("Rating", "TextLabel"))
+        self.label.setHtml(_translate("Rating", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.back.setText(_translate("Rating", "ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ"))
 
 
 if __name__ == "__main__":

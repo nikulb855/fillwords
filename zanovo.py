@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_zanovo_2(object):
     def setupUi(self, zanovo_2):
         zanovo_2.setObjectName("zanovo_2")
-        zanovo_2.resize(374, 276)
+        zanovo_2.resize(374, 324)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -90,6 +90,15 @@ class Ui_zanovo_2(object):
         self.label.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.label_2.setFont(font)
+        self.label_2.setText("")
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_2.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout.addWidget(self.label_2)
         self.zanovo = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -132,9 +141,9 @@ class Ui_zanovo_2(object):
         self.exit.setObjectName("exit")
         self.verticalLayout.addWidget(self.exit)
         self.verticalLayout.setStretch(0, 10)
-        self.verticalLayout.setStretch(1, 30)
         self.verticalLayout.setStretch(2, 30)
         self.verticalLayout.setStretch(3, 30)
+        self.verticalLayout.setStretch(4, 30)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         zanovo_2.setCentralWidget(self.centralwidget)
 
@@ -145,6 +154,16 @@ class Ui_zanovo_2(object):
         _translate = QtCore.QCoreApplication.translate
         zanovo_2.setWindowTitle(_translate("zanovo_2", "Филворды"))
         self.label.setText(_translate("zanovo_2", "УРОВЕНЬ ПРОЙДЕН"))
-        self.zanovo.setText(_translate("zanovo_2", "ПОВТОРИТЬ"))
+        self.zanovo.setText(_translate("zanovo_2", "ЗАНОВО"))
         self.glmenu.setText(_translate("zanovo_2", "ВЫБОР УРОВНЯ"))
         self.exit.setText(_translate("zanovo_2", "ВЫЙТИ"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    zanovo_2 = QtWidgets.QMainWindow()
+    ui = Ui_zanovo_2()
+    ui.setupUi(zanovo_2)
+    zanovo_2.show()
+    sys.exit(app.exec_())

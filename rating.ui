@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>743</height>
+    <width>432</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -108,16 +108,51 @@ QPushButton:pressed{
 background-color: #888;
 }
 
-</string>
+QLabel{
+background-color: rgb(212, 220, 255)
+border-radius: 10px;
+border: 1px solid #b1b1b1;
+}
+
+QTextEdit {
+    text-align: center;
+}</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>TextLabel</string>
+     <widget class="QTextEdit" name="label">
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:15pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="back">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>28</width>
+        <height>25</height>
+       </size>
       </property>
      </widget>
     </item>
