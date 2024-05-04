@@ -261,7 +261,7 @@ class SecWindow3x3(QMainWindow):
                     return
         self.score += 1
         self.update_rating()
-        self.open_zanovo3x3()
+        self.open_zanovo()
 
     def update_rating(self):
         if not self.nickname:
@@ -286,9 +286,9 @@ class SecWindow3x3(QMainWindow):
         with open('rating.txt', 'w', encoding='utf8') as file:
             file.writelines(updated_lines)
 
-    def open_zanovo3x3(self):
-        self.zanovo3x3 = Zanovo(self.nickname, self.selected_level)
-        self.zanovo3x3.show()
+    def open_zanovo(self):
+        self.zanovo = Zanovo(self.nickname, self.selected_level)
+        self.zanovo.show()
         self.hide()
 
     def reset_colors(self):
@@ -331,26 +331,29 @@ class SecWindow3x3(QMainWindow):
         selected_positions = [(item.row(), item.column()) for item in self.highlighted_items]
 
         #Для расставноки 3 слов по 3 буквы
-        if self.place == self.searchThreeLetterWords:
-            if selected_positions == self.positions3x3[:3] or \
-                    selected_positions == self.positions3x3[3:6] or \
-                    selected_positions == self.positions3x3[6:]:
+        if self.place == '333':
+            variants_positions = self.positions['333']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:6] or \
+                    selected_positions == variants_positions[6:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        #Для расстановки 2 слов по 5 и 6 букв
-        elif self.place == self.searchWords3and6:
-            if selected_positions == self.positions3and6[:3] or selected_positions == self.positions3and6[3:]:
+        #Для расстановки 2 слов по 3 и 6 букв
+        elif self.place == '36':
+            variants_positions = self.positions['36']
+            if selected_positions == variants_positions[:3] or selected_positions == variants_positions[3:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
         #Для расстановки 2 слов по 4 и 5 букв
-        elif self.place == self.searchWords4and5:
-            if selected_positions == self.positions4and5[:4] or selected_positions == self.positions4and5[4:]:
+        elif self.place == '45':
+            variants_positions = self.positions['45']
+            if selected_positions == variants_positions[:4] or selected_positions == variants_positions[4:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
@@ -486,50 +489,55 @@ class SecWindow4x4(QMainWindow):
         self.ui = Ui_secwindow4x4()
         self.ui.setupUi(self)
         self.ui.back.clicked.connect(self.back_to_gamelevels)
-        self.letters3346 = []
-        self.positions3346 = []
-        self.letters3445 = []
-        self.positions3445 = []
-        self.letters457 = []
-        self.positions457 = []
-        self.letters3355 = []
-        self.positions3355 = []
-        self.letters367 = []
-        self.positions367 = []
-        self.letters3337 = []
-        self.positions3337 = []
-        self.letters4444 = []
-        self.positions4444 = []
+        self.letters = {}
+        self.positions = {}
+
 # -----------------------------------------------------------------------------------------------------------------------
                                      # Позиции на поле
-        self.variants3346 = [
-            [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (1, 0), (1, 1),
-             (1, 2), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 0), (3, 0)]
-        ]
-        self.variants3445 = [
-            [(1, 0), (2, 0), (3, 0), (0, 2), (0, 3), (1, 3), (1, 2), (3, 2),
-             (2, 2), (2, 3), (3, 3), (0, 0), (0, 1), (1, 1), (2, 1), (3, 1)]
-        ]
-        self.variants457 = [
-            [(3, 2), (3, 3), (2, 3), (1, 3), (1, 2), (1, 1), (0, 1), (0, 2),
-             (0, 3), (2, 2), (2, 1), (3, 1), (3, 0), (2, 0), (1, 0), (0, 0)]
-        ]
-        self.variants3355 = [
-            [(0, 0), (0, 1), (1, 1), (1, 0), (2, 0), (3, 0), (2, 3), (3, 3),
-             (3, 2), (3, 1), (2, 1), (2, 2), (1, 2), (1, 3), (0, 3), (0, 2)]
-        ]
-        self.variants367 = [
-            [(3, 2), (3, 3), (2, 3), (0, 1), (0, 2), (0, 3), (1, 3), (1, 2),
-             (2, 2), (1, 1), (2, 1), (3, 1), (3, 0), (2, 0), (1, 0), (0, 0)]
-        ]
-        self.variants3337 = [
-            [(0, 0), (0, 1), (0, 2), (2, 3), (3, 3), (3, 2), (2, 0), (3, 0),
-             (3, 1), (0, 3), (1, 3), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0)]
-        ]
-        self.variants4444 = [
-            [(0, 0), (0, 1), (0, 2), (0, 3), (3, 2), (3, 3), (2, 3), (1, 3),
-             (2, 1), (2, 2), (1, 2), (1, 1), (3, 1), (3, 0), (2, 0), (1, 0)]
-        ]
+        self.variants = {
+            '3346': [
+                [(0, 0), (0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (1, 0), (1, 1),
+                 (1, 2), (2, 2), (3, 3), (3, 2), (3, 1), (2, 1), (2, 0), (3, 0)],
+                [(3, 2), (3, 1), (3, 0), (1, 1), (0, 1), (0, 2), (0, 0), (1, 0),
+                 (2, 0), (2, 1), (0, 3), (1, 3), (1, 2), (2, 2), (2, 3), (3, 3)]
+            ],
+            '3445': [
+                [(1, 0), (2, 0), (3, 0), (0, 2), (0, 3), (1, 3), (1, 2), (3, 2),
+                 (2, 2), (2, 3), (3, 3), (0, 0), (0, 1), (1, 1), (2, 1), (3, 1)],
+                [(2, 3), (2, 2), (2, 1), (0, 2), (0, 1), (0, 0), (1, 0), (1, 1),
+                 (1, 2), (1, 3), (0, 3), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]
+            ],
+            '457': [
+                [(3, 2), (3, 3), (2, 3), (1, 3), (1, 2), (1, 1), (0, 1), (0, 2),
+                 (0, 3), (2, 2), (2, 1), (3, 1), (3, 0), (2, 0), (1, 0), (0, 0)],
+                [(2, 0), (2, 1), (2, 2), (1, 2), (2, 3), (3, 3), (3, 2), (3, 1),
+                 (3, 0), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0), (1, 0), (1, 1)]
+            ],
+            '3355': [
+                [(0, 0), (0, 1), (1, 1), (1, 0), (2, 0), (3, 0), (2, 3), (3, 3),
+                 (3, 2), (3, 1), (2, 1), (2, 2), (1, 2), (1, 3), (0, 3), (0, 2)],
+                [(0, 2), (0, 3), (1, 3), (2, 1), (2, 2), (1, 2), (1, 1), (0, 1),
+                 (0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3), (2, 3)]
+            ],
+            '367': [
+                [(3, 2), (3, 3), (2, 3), (0, 1), (0, 2), (0, 3), (1, 3), (1, 2),
+                 (2, 2), (1, 1), (2, 1), (3, 1), (3, 0), (2, 0), (1, 0), (0, 0)],
+                [(1, 1), (1, 2), (0, 2), (0, 1), (0, 0), (1, 0), (2, 0), (2, 1),
+                 (2, 2), (3, 0), (3, 1), (3, 2), (3, 3), (2, 3), (1, 3), (0, 3)]
+            ],
+            '3337': [
+                [(0, 0), (0, 1), (0, 2), (2, 3), (3, 3), (3, 2), (2, 0), (3, 0),
+                 (3, 1), (0, 3), (1, 3), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0)],
+                [(0, 2), (0, 1), (0, 0), (1, 1), (1, 2), (2, 2), (0, 1), (0, 2),
+                 (0, 3), (2, 1), (3, 1), (3, 2), (3, 3), (2, 3), (1, 3), (0, 3)]
+            ],
+            '4444': [
+                [(0, 0), (0, 1), (0, 2), (0, 3), (3, 2), (3, 3), (2, 3), (1, 3),
+                 (2, 1), (2, 2), (1, 2), (1, 1), (3, 1), (3, 0), (2, 0), (1, 0)],
+                [(1, 1), (1, 0), (0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1),
+                 (2, 0), (3, 0), (3, 1), (3, 2), (0, 3), (1, 3), (2, 3), (3, 3)]
+            ]
+        }
         self.randomWordsPlace()
 # -----------------------------------------------------------------------------------------------------------------------
                                         # Выделение ячеек
@@ -563,7 +571,7 @@ class SecWindow4x4(QMainWindow):
                     return
         self.score += 2
         self.update_rating()
-        self.open_zanovo4x4()
+        self.open_zanovo()
 
     def update_rating(self):
         if not self.nickname:
@@ -588,9 +596,9 @@ class SecWindow4x4(QMainWindow):
         with open('rating.txt', 'w', encoding='utf8') as file:
             file.writelines(updated_lines)
 
-    def open_zanovo4x4(self):
-        self.zanovo4x4 = Zanovo(self.nickname, self.selected_level)
-        self.zanovo4x4.show()
+    def open_zanovo(self):
+        self.zanovo = Zanovo(self.nickname, self.selected_level)
+        self.zanovo.show()
         self.hide()
 
     def reset_colors(self):
@@ -634,83 +642,90 @@ class SecWindow4x4(QMainWindow):
     def check_word(self):
         selected_positions = [(item.row(), item.column()) for item in self.highlighted_items]
 
-                        #4 слова по 3 3 4 6 букв
+        # 4 слова по 3 3 4 6 букв
 
-        if self.place == self.searchWords3346:
-            if selected_positions == self.positions3346[:3] or \
-                    selected_positions == self.positions3346[3:6] or \
-                    selected_positions == self.positions3346[6:10] or \
-                    selected_positions == self.positions3346[10:]:
+        if self.place == '3346':
+            variants_positions = self.positions['3346']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:6] or \
+                    selected_positions == variants_positions[6:10] or \
+                    selected_positions == variants_positions[10:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                        #4 слова по 3 4 4 5 букв
+                # 4 слова по 3 4 4 5 букв
 
-        elif self.place == self.searchWords3445:
-            if selected_positions == self.positions3445[:3] or \
-                    selected_positions == self.positions3445[3:7] or \
-                    selected_positions == self.positions3445[7:11] or \
-                    selected_positions == self.positions3445[11:]:
+        elif self.place == '3445':
+            variants_positions = self.positions['3445']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:7] or \
+                    selected_positions == variants_positions[7:11] or \
+                    selected_positions == variants_positions[11:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                        #3 слова по 4 5 7 букв
+                # 3 слова по 4 5 7 букв
 
-        elif self.place == self.searchWords457:
-            if selected_positions == self.positions457[:4] or \
-                    selected_positions == self.positions457[4:9] or \
-                    selected_positions == self.positions457[9:]:
+        elif self.place == '457':
+            variants_positions = self.positions['457']
+            if selected_positions == variants_positions[:4] or \
+                    selected_positions == variants_positions[4:9] or \
+                    selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                        #4 слова по 3 3 5 5 букв
+                # 4 слова по 3 3 5 5 букв
 
-        elif self.place == self.searchWords3355:
-            if selected_positions == self.positions3355[:3] or \
-                    selected_positions == self.positions3355[3:6] or \
-                    selected_positions == self.positions3355[6:11] or \
-                    selected_positions == self.positions3355[11:]:
+        elif self.place == '3355':
+            variants_positions = self.positions['3355']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:6] or \
+                    selected_positions == variants_positions[6:11] or \
+                    selected_positions == variants_positions[11:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                            #3 слова по 3 6 7 букв
+                # 3 слова по 3 6 7 букв
 
-        elif self.place == self.searchWords367:
-            if selected_positions == self.positions367[:3] or \
-                    selected_positions == self.positions367[3:9] or \
-                    selected_positions == self.positions367[9:]:
+        elif self.place == '367':
+            variants_positions = self.positions['367']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:9] or \
+                    selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                        #4 слова по 3 3 3 7 букв
+                # 4 слова по 3 3 3 7 букв
 
-        elif self.place == self.searchWords3337:
-            if selected_positions == self.positions3337[:3] or \
-                    selected_positions == self.positions3337[3:6] or \
-                    selected_positions == self.positions3337[6:9] or \
-                    selected_positions == self.positions3337[9:]:
+        elif self.place == '3337':
+            variants_positions = self.positions['3337']
+            if selected_positions == variants_positions[:3] or \
+                    selected_positions == variants_positions[3:6] or \
+                    selected_positions == variants_positions[6:9] or \
+                    selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-                        #4 слова по 4 буквы каждое
+                # 4 слова по 4 буквы каждое
 
-        elif self.place == self.searchWords4444:
-            if selected_positions == self.positions4444[:4] or \
-                    selected_positions == self.positions4444[4:8] or \
-                    selected_positions == self.positions4444[8:12] or \
-                    selected_positions == self.positions4444[12:]:
+        elif self.place == '4444':
+            variants_positions = self.positions['4444']
+            if selected_positions == variants_positions[:4] or \
+                    selected_positions == variants_positions[4:8] or \
+                    selected_positions == variants_positions[8:12] or \
+                    selected_positions == variants_positions[12:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
@@ -719,287 +734,114 @@ class SecWindow4x4(QMainWindow):
         self.highlighted_items.clear()
 #-----------------------------------------------------------------------------------------------------------------------
     def randomWordsPlace(self):
-        choice = random.choice(['3346', '3445', '457', '3355', '367', '3337', '4444'])
-        if choice == '3346':
-            self.place = self.searchWords3346
-        elif choice == '3445':
-            self.place = self.searchWords3445
-        elif choice == '457':
-            self.place = self.searchWords457
-        elif choice == '3355':
-            self.place = self.searchWords3355
-        elif choice == '367':
-            self.place = self.searchWords367
-        elif choice == '3337':
-            self.place = self.searchWords3337
-        elif choice == '4444':
-            self.place = self.searchWords4444
-        self.place()
+        choice = random.choice(list(self.variants.keys()))
+        word_lengths = {
+            '3346': [3, 3, 4, 6],
+            '3445': [3, 4, 4, 5],
+            '457': [4, 5, 7],
+            '3355': [3, 3, 5, 5],
+            '367': [3, 6, 7],
+            '3337': [3, 3, 3, 7],
+            '4444': [4, 4, 4, 4]
+        }
+        self.place = choice
+        self.searchWords(word_lengths[choice], choice)
 
-#-----------------------------------------------------------------------------------------------------------------------
-                                    #4 слова по 3 3 4 6 букв
-    def searchWords3346(self):
+    # -----------------------------------------------------------------------------------------------------------------------
+
+    def searchWords(self, word_lengths, variant_key):
         with open("words.txt", 'r', encoding='utf-8') as file:
             text = file.read()
-            three_letter_words = re.findall(r'\b\w{3}\b', text)
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            six_letter_word = re.findall(r'\b\w{6}\b', text)
-            random_three_words, random_four_word, random_six_word = self.selectRandomWords3346(three_letter_words, four_letter_word, six_letter_word)
-            self.delenie3346(random_three_words, random_four_word, random_six_word)
-            self.zapolnenie3346()
+            words = {length: re.findall(r'\b\w{' + str(length) + r'}\b', text) for length in word_lengths}
+            selected_words = self.selectRandomWords(words, variant_key)
+            if isinstance(selected_words, dict):
+                self.delenie(selected_words, variant_key)
+                self.zapolnenie(variant_key)
+            else:
+                # Handle the error message returned by selectRandomWords
+                print(selected_words)
 
-    def selectRandomWords3346(self, three_letter_words, four_letter_word, six_letter_word):
-        if len(four_letter_word) < 1 or len(six_letter_word) < 1 or len(three_letter_words) < 2:
-            return ["Не хватает слов"]
-        return random.sample(three_letter_words, 2), random.choice(four_letter_word), random.choice(six_letter_word)
+    def selectRandomWords(self, words, variant_key):
+        selected_words = {}
+        if variant_key == '3346':
+            if len(words[3]) < 2 or len(words[4]) < 1 or len(words[6]) < 1:
+                return {"Не хватает слов1"}
+            selected_words[3] = random.sample(words[3], 2)
+            selected_words[4] = random.choice(words[4])
+            selected_words[6] = random.choice(words[6])
+        elif variant_key == '3445':
+            if len(words[3]) < 1 or len(words[4]) < 2 or len(words[5]) < 1:
+                return {'Не хватает слов2'}
+            selected_words[3] = random.choice(words[3])
+            selected_words[4] = random.sample(words[4], 2)
+            selected_words[5] = random.choice(words[5])
+        elif variant_key == '457':
+            if len(words[4]) < 1 or len(words[5]) < 1 or len(words[7]) < 1:
+                return {'Не хватает слов3'}
+            selected_words[4] = random.choice(words[4])
+            selected_words[5] = random.choice(words[5])
+            selected_words[7] = random.choice(words[7])
+        elif variant_key == '3355':
+            if len(words[3]) < 2 or len(words[5]) < 2:
+                return {"Не хватает слов4"}
+            selected_words[3] = random.sample(words[3], 2)
+            selected_words[5] = random.sample(words[5], 2)
+        elif variant_key == '367':
+            if len(words[3]) < 1 or len(words[6]) < 1 or len(words[7]) < 1:
+                return {"Не хватает слов5"}
+            selected_words[3] = random.choice(words[3])
+            selected_words[6] = random.choice(words[6])
+            selected_words[7] = random.choice(words[7])
+        elif variant_key == '3337':
+            if len(words[3]) < 3 or len(words[7]) < 1:
+                return {"Не хватает слов6"}
+            selected_words[3] = random.sample(words[3], 3)
+            selected_words[7] = random.choice(words[7])
+        elif variant_key == '4444':
+            if len(words[4]) < 4:
+                return {"Не хватает слов7"}
+            selected_words[4] = random.sample(words[4], 4)
+        else:
+            return {"Неизвестный вариант"}
+        return selected_words
 
-    def delenie3346(self, three_words, four_word, six_word):
-        if len(four_word) < 1 or len(six_word) < 1 or len(three_words) < 2:
-            print("Ошибка delenie3346")
-            return
+    def delenie(self, selected_words, variant_key):
+        if variant_key == '3346':
+            random_variants = random.choice(self.variants['3346'])
+        elif variant_key == '3445':
+            random_variants = random.choice(self.variants['3445'])
+        elif variant_key == '457':
+            random_variants = random.choice(self.variants['457'])
+        elif variant_key == '3355':
+            random_variants = random.choice(self.variants['3355'])
+        elif variant_key == '367':
+            random_variants = random.choice(self.variants['367'])
+        elif variant_key == '3337':
+            random_variants = random.choice(self.variants['3337'])
+        elif variant_key == '4444':
+            random_variants = random.choice(self.variants['4444'])
+        self.positions[variant_key] = random_variants
+        self.letters[variant_key] = []
 
-        self.positions3346 = random.choice(self.variants3346)
+        for word_list in selected_words.values():
+            if isinstance(word_list, list):
+                for word in word_list:
+                    self.letters[variant_key].extend(list(word))
+            else:
+                self.letters[variant_key].extend(list(word_list))
 
-        for word in three_words:
-            self.letters3346.extend(list(word))
-        self.letters3346.extend(list(four_word))
-        self.letters3346.extend(list(six_word))
-
-    def zapolnenie3346(self):
-        if len(self.letters3346) != len(self.positions3346):
+    def zapolnenie(self, variant_key):
+        if len(self.letters[variant_key]) != len(self.positions[variant_key]):
             print("Количество букв и позиций должно быть одинаковым.")
+            print(self.positions, self.letters)
             return
 
-        for i in range(len(self.letters3346)):
-            row, col = self.positions3346[i]
-            item = QTableWidgetItem(self.letters3346[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                     #4 слова по 3 4 4 5 букв
-    def searchWords3445(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            three_letter_word = re.findall(r'\b\w{3}\b', text)
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            random_three_word, random_four_word, random_five_word = self.selectRandomWords3445(three_letter_word, four_letter_word, five_letter_word)
-            self.delenie3445(random_three_word, random_four_word, random_five_word)
-            self.zapolnenie3445()
-
-    def selectRandomWords3445(self, three_letter_word, four_letter_word, five_letter_word):
-        if len(three_letter_word) < 1 or len(four_letter_word) < 2 or len(five_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.choice(three_letter_word), random.sample(four_letter_word, 2), random.choice(five_letter_word)
-
-    def delenie3445(self, three_word, four_word, five_word):
-        if len(three_word) < 1 or len(four_word) < 2 or len(five_word) < 1:
-            print('delenie3445')
-
-        self.positions3445 = random.choice(self.variants3445)
-
-        self.letters3445.extend(list(three_word))
-        for word in four_word:
-            self.letters3445.extend(list(word))
-        self.letters3445.extend(list(five_word))
-
-    def zapolnenie3445(self):
-        if len(self.letters3445) != len(self.positions3445):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters3445)):
-            row, col = self.positions3445[i]
-            item = QTableWidgetItem(self.letters3445[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-
-#-----------------------------------------------------------------------------------------------------------------------
-                                     # 3 слова по 4 5 7 букв
-    def searchWords457(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_four_word, random_five_word, random_seven_word = self.selectRandomWords457(four_letter_word, five_letter_word, seven_letter_word)
-            self.delenie457(random_four_word, random_five_word, random_seven_word)
-            self.zapolnenie457()
-
-    def selectRandomWords457(self, four_letter_word, five_letter_word, seven_letter_word):
-        if len(four_letter_word) < 1 or len(five_letter_word) < 1 or len(seven_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.choice(four_letter_word), random.choice(five_letter_word), random.choice(seven_letter_word)
-
-    def delenie457(self, four_word, five_word, seven_letter_word):
-        if len(four_word) < 1 or len(five_word) < 1 or len(seven_letter_word) < 1:
-            print('delenie457')
-
-        self.positions457 = random.choice(self.variants457)
-
-        self.letters457.extend(list(four_word))
-        self.letters457.extend(list(five_word))
-        self.letters457.extend(list(seven_letter_word))
-
-    def zapolnenie457(self):
-        if len(self.letters457) != len(self.positions457):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters457)):
-            row, col = self.positions457[i]
-            item = QTableWidgetItem(self.letters457[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                     #4 cлова по 3 3 5 5 букв
-    def searchWords3355(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            three_letter_word = re.findall(r'\b\w{3}\b', text)
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            random_three_word, random_five_word = self.selectRandomWords3355(three_letter_word, five_letter_word)
-            self.delenie3355(random_three_word, random_five_word)
-            self.zapolnenie3355()
-
-    def selectRandomWords3355(self, three_letter_word, five_letter_word):
-        if len(three_letter_word) < 2 or len(five_letter_word) < 2:
-            return ["Не хватает слов"]
-        return random.sample(three_letter_word,  2), random.sample(five_letter_word, 2)
-
-    def delenie3355(self, three_word, five_word,):
-        if len(three_word) < 2 or len(five_word) < 2:
-            print('delenie3355')
-
-        self.positions3355 = random.choice(self.variants3355)
-
-        for word in three_word:
-            self.letters3355.extend(word)
-        for word in five_word:
-            self.letters3355.extend(word)
-
-    def zapolnenie3355(self):
-        if len(self.letters3355) != len(self.positions3355):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters3355)):
-            row, col = self.positions3355[i]
-            item = QTableWidgetItem(self.letters3355[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                      #3 слова по 3 6 7 букв
-
-    def searchWords367(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            three_letter_word = re.findall(r'\b\w{3}\b', text)
-            six_letter_word = re.findall(r'\b\w{6}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_three_word, random_six_word, random_seven_word = self.selectRandomWords367(three_letter_word, six_letter_word, seven_letter_word)
-            self.delenie367(random_three_word, random_six_word, random_seven_word)
-            self.zapolnenie367()
-
-    def selectRandomWords367(self, three_letter_word, six_letter_word, seven_letter_word):
-        if len(three_letter_word) < 1 or len(six_letter_word) < 1 or len(seven_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.choice(three_letter_word), random.choice(six_letter_word), random.choice(seven_letter_word)
-
-    def delenie367(self, three_word, six_word, seven_letter_word):
-        if len(three_word) < 1 or len(six_word) < 1 or len(seven_letter_word) < 1:
-            print('delenie367')
-
-        self.positions367 = random.choice(self.variants367)
-
-        self.letters367.extend(list(three_word))
-        self.letters367.extend(list(six_word))
-        self.letters367.extend(list(seven_letter_word))
-
-    def zapolnenie367(self):
-        if len(self.letters367) != len(self.positions367):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters367)):
-            row, col = self.positions367[i]
-            item = QTableWidgetItem(self.letters367[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                    #4 слова по 3 3 3 7 букв
-
-    def searchWords3337(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            three_letter_words = re.findall(r'\b\w{3}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_three_words, random_seven_word = self.selectRandomWords3337(three_letter_words, seven_letter_word)
-            self.delenie3337(random_three_words, random_seven_word)
-            self.zapolnenie3337()
-
-    def selectRandomWords3337(self, three_letter_words, seven_letter_word):
-        if len(three_letter_words) < 3 or len(seven_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.sample(three_letter_words, 3), random.choice(seven_letter_word)
-
-    def delenie3337(self, three_words, seven_word):
-        if len(three_words) < 3 or len(seven_word) < 1:
-            print("Ошибка delenie3337")
-            return
-
-        self.positions3337 = random.choice(self.variants3337)
-
-        for word in three_words:
-            self.letters3337.extend(list(word))
-        self.letters3337.extend(list(seven_word))
-
-    def zapolnenie3337(self):
-        if len(self.letters3337) != len(self.positions3337):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters3337)):
-            row, col = self.positions3337[i]
-            item = QTableWidgetItem(self.letters3337[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                      #4 слова по 4 буквы каждое
-
-    def searchWords4444(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            random_four_word = self.selectRandomWords4444(four_letter_word)
-            self.delenie4444(random_four_word)
-            self.zapolnenie4444()
-
-    def selectRandomWords4444(self, four_letter_word):
-        if len(four_letter_word) < 4:
-            return ["Не хватает слов"]
-        return random.sample(four_letter_word, 4)
-
-    def delenie4444(self, four_word):
-        if len(four_word) < 4:
-            print("Ошибка delenie4444")
-            return
-
-        self.positions4444 = random.choice(self.variants4444)
-
-        for word in four_word:
-            self.letters4444.extend(list(word))
-
-    def zapolnenie4444(self):
-        if len(self.letters4444) != len(self.positions4444):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters4444)):
-            row, col = self.positions4444[i]
-            item = QTableWidgetItem(self.letters4444[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
+        for i, (row, col) in enumerate(self.positions[variant_key]):
+            if i < len(self.letters[variant_key]):
+                letter = self.letters[variant_key][i]
+                item = QTableWidgetItem(letter)
+                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
     def back_to_gamelevels(self):
         self.gamelevels = GameLevels(self.nickname)
@@ -1012,60 +854,52 @@ class SecWindow5x5(QMainWindow):
         self.ui = Ui_secwindow5x5()
         self.ui.setupUi(self)
         self.ui.back.clicked.connect(self.back_to_gamelevels)
-        self.letters55555 = []
-        self.positions55555 = []
-        self.letters4777 = []
-        self.positions4777 = []
-        self.letters6667 = []
-        self.positions6667 = []
-        self.letters5677 = []
-        self.positions5677 = []
-        self.letters5578 = []
-        self.positions5578 = []
-        self.letters4588 = []
-        self.positions4588 = []
-        self.variants55555 = [
-            [(1, 1), (1, 0), (0, 0), (0, 1), (0, 2),
-             (0, 3), (0, 4), (1, 4), (1, 3), (1, 2),
-             (3, 3), (2, 3), (2, 2), (2, 1), (2, 0),
-             (4, 2), (4, 3), (4, 4), (3, 4), (2, 4),
-             (3, 2), (3, 1), (4, 1), (4, 0), (3, 0)]
-        ]
-        self.variants4777 = [
-            [(1, 1), (1, 2), (2, 2), (2, 1), (3, 0),
-             (2, 0), (1, 0), (0, 0), (0, 1), (0, 2),
-             (0, 3), (1, 3), (2, 3), (3, 3), (3, 4),
-             (2, 4), (1, 4), (0, 4), (4, 0), (4, 1),
-             (3, 1), (3, 2), (4, 2), (4, 3), (4, 4)]
-        ]
-        self.variants6667 = [
-            [(0, 0), (0, 1), (0, 2), (1, 2), (1, 1),
-             (1, 0), (2, 1), (2, 0), (3, 0), (4, 0),
-             (4, 1), (4, 2), (3, 1), (3, 2), (2, 2),
-             (2, 3), (3, 3), (4, 3), (1, 3), (0, 3),
-             (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
-        ]
-        self.variants5677 = [
-            [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3),
-             (3, 4), (4, 4), (4, 3), (3, 3), (2, 3),
-             (2, 4), (1, 0), (0, 0), (0, 1), (0, 2),
-             (0, 3), (0, 4), (1, 4), (4, 0), (4, 1),
-             (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)],
-        ]
-        self.variants5578 = [
-            [(3, 3), (2, 3), (1, 3), (1, 2), (1, 1),
-             (1, 0), (2, 0), (2, 1), (2, 2), (3, 2),
-             (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-             (1, 4), (2, 4), (3, 1), (3, 0), (4, 0),
-             (4, 1), (4, 2), (4, 3), (4, 4), (3, 4)]
-        ]
-        self.variants4588 = [
-            [(0, 3), (1, 3), (2, 3), (3, 3), (1, 1),
-             (0, 1), (0, 2), (1, 2), (2, 2), (0, 0),
-             (1, 0), (2, 0), (3, 0), (4, 0), (4, 1),
-             (3, 1), (2, 1), (0, 4), (1, 4), (2, 4),
-             (3, 4), (4, 4), (4, 3), (4, 2), (3, 2)]
-        ]
+        self.letters = {}
+        self.positions = {}
+        self.variants = {
+            '55555': [
+                [(1, 1), (1, 0), (0, 0), (0, 1), (0, 2),
+                 (0, 3), (0, 4), (1, 4), (1, 3), (1, 2),
+                 (3, 3), (2, 3), (2, 2), (2, 1), (2, 0),
+                 (4, 2), (4, 3), (4, 4), (3, 4), (2, 4),
+                 (3, 2), (3, 1), (4, 1), (4, 0), (3, 0)],
+
+                [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
+                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
+                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
+                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
+                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+                ],
+            '4777': [(1, 1), (1, 2), (2, 2), (2, 1), (3, 0),
+                     (2, 0), (1, 0), (0, 0), (0, 1), (0, 2),
+                     (0, 3), (1, 3), (2, 3), (3, 3), (3, 4),
+                     (2, 4), (1, 4), (0, 4), (4, 0), (4, 1),
+                     (3, 1), (3, 2), (4, 2), (4, 3), (4, 4)],
+
+            '6667': [(0, 0), (0, 1), (0, 2), (1, 2), (1, 1),
+                     (1, 0), (2, 1), (2, 0), (3, 0), (4, 0),
+                     (4, 1), (4, 2), (3, 1), (3, 2), (2, 2),
+                     (2, 3), (3, 3), (4, 3), (1, 3), (0, 3),
+                     (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)],
+
+            '5677': [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3),
+                     (3, 4), (4, 4), (4, 3), (3, 3), (2, 3),
+                     (2, 4), (1, 0), (0, 0), (0, 1), (0, 2),
+                     (0, 3), (0, 4), (1, 4), (4, 0), (4, 1),
+                     (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)],
+
+            '5578': [(3, 3), (2, 3), (1, 3), (1, 2), (1, 1),
+                     (1, 0), (2, 0), (2, 1), (2, 2), (3, 2),
+                     (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                     (1, 4), (2, 4), (3, 1), (3, 0), (4, 0),
+                     (4, 1), (4, 2), (4, 3), (4, 4), (3, 4)],
+
+            '4588': [(0, 3), (1, 3), (2, 3), (3, 3), (1, 1),
+                     (0, 1), (0, 2), (1, 2), (2, 2), (0, 0),
+                     (1, 0), (2, 0), (3, 0), (4, 0), (4, 1),
+                     (3, 1), (2, 1), (0, 4), (1, 4), (2, 4),
+                     (3, 4), (4, 4), (4, 3), (4, 2), (3, 2)]
+        }
         self.randomWordsPlace()
 # -----------------------------------------------------------------------------------------------------------------------
         # Выделение ячеек
@@ -1099,7 +933,7 @@ class SecWindow5x5(QMainWindow):
                     return
         self.score += 3
         self.update_rating()
-        self.open_zanovo5x5()
+        self.open_zanovo()
 
 
     def update_rating(self):
@@ -1125,9 +959,9 @@ class SecWindow5x5(QMainWindow):
         with open('rating.txt', 'w', encoding='utf8') as file:
             file.writelines(updated_lines)
 
-    def open_zanovo5x5(self):
-        self.zanovo5x5 = Zanovo(self.nickname, self.selected_level)
-        self.zanovo5x5.show()
+    def open_zanovo(self):
+        self.zanovo = Zanovo(self.nickname, self.selected_level)
+        self.zanovo.show()
         self.hide()
 
     def reset_colors(self):
@@ -1170,65 +1004,69 @@ class SecWindow5x5(QMainWindow):
 
     def check_word(self):
         selected_positions = [(item.row(), item.column()) for item in self.highlighted_items]
-
                             #5 слов по 5 букв в каждом
-
-        if self.place == self.searchWords55555:
-            if selected_positions == self.positions55555[:5] or \
-                    selected_positions == self.positions55555[5:10] or \
-                    selected_positions == self.positions55555[10:15] or \
-                    selected_positions == self.positions55555[15:20] or \
-                    selected_positions == self.positions55555[25:]:
+        if self.place == '55555':
+            variant_positions = self.positions['55555']
+            if selected_positions == variant_positions[:5] or \
+                    selected_positions == variant_positions[5:10] or \
+                    selected_positions == variant_positions[10:15] or \
+                    selected_positions == variant_positions[15:20] or \
+                    selected_positions == variant_positions[25:]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        elif self.place == self.searchWords4777:
-            if selected_positions == self.positions4777[:4] or \
-                    selected_positions == self.positions4777[4:11] or \
-                    selected_positions == self.positions4777[11:18] or \
-                    selected_positions == self.positions4777[18:25]:
+        elif self.place == '4777':
+            variant_positions = self.positions['4777']
+            if selected_positions == variant_positions[:4] or \
+                    selected_positions == variant_positions[4:11] or \
+                    selected_positions == variant_positions[11:18] or \
+                    selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        elif self.place == self.searchWords6667:
-            if selected_positions == self.positions6667[:6] or \
-                    selected_positions == self.positions6667[6:12] or \
-                    selected_positions == self.positions6667[12:18] or \
-                    selected_positions == self.positions6667[18:25]:
+        elif self.place == '6667':
+            variant_positions = self.positions['6667']
+            if selected_positions == variant_positions[:6] or \
+                    selected_positions == variant_positions[6:12] or \
+                    selected_positions == variant_positions[12:18] or \
+                    selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        elif self.place == self.searchWords5677:
-            if selected_positions == self.positions5677[:5] or \
-                    selected_positions == self.positions5677[5:11] or \
-                    selected_positions == self.positions5677[11:18] or \
-                    selected_positions == self.positions5677[18:25]:
+        elif self.place == '5677':
+            variant_positions = self.positions['5677']
+            if selected_positions == variant_positions[:5] or \
+                    selected_positions == variant_positions[5:11] or \
+                    selected_positions == variant_positions[11:18] or \
+                    selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        elif self.place == self.searchWords5578:
-            if selected_positions == self.positions5578[:5] or \
-                    selected_positions == self.positions5578[5:10] or \
-                    selected_positions == self.positions5578[10:17] or \
-                    selected_positions == self.positions5578[17:25]:
+        elif self.place == '5578':
+            variant_positions = self.positions['5578']
+            if selected_positions == variant_positions[:5] or \
+                    selected_positions == variant_positions[5:10] or \
+                    selected_positions == variant_positions[10:17] or \
+                    selected_positions == variant_positions[17:25]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
                 self.reset_colors()
 
-        elif self.place == self.searchWords4588:
-            if selected_positions == self.positions4588[:4] or \
-                    selected_positions == self.positions4588[4:9] or \
-                    selected_positions == self.positions4588[9:17] or \
-                    selected_positions == self.positions4588[17:25]:
+        elif self.place == '4588':
+            variant_positions = self.positions['4588']
+            if selected_positions == variant_positions[:4] or \
+                    selected_positions == variant_positions[4:9] or \
+                    selected_positions == variant_positions[9:17] or \
+                    selected_positions == variant_positions[17:25]:
                 for item in self.highlighted_items:
                     item.setBackground(QColor(0, 255, 0))
             else:
@@ -1236,251 +1074,108 @@ class SecWindow5x5(QMainWindow):
         self.highlighted_items.clear()
 #-----------------------------------------------------------------------------------------------------------------------
     def randomWordsPlace(self):
-        choice = random.choice(['55555', '4777', '6667', '5677', '5578', '4588'])
-        if choice == '55555':
-            self.place = self.searchWords55555
-        elif choice == '4777':
-            self.place = self.searchWords4777
-        elif choice == '6667':
-            self.place = self.searchWords6667
-        elif choice == '5677':
-            self.place = self.searchWords5677
-        elif choice == '5578':
-            self.place = self.searchWords5578
-        elif choice == '4588':
-            self.place = self.searchWords4588
-        #elif choice == '4444':
-        #    self.place = self.searchWords55555
-
-        self.place()
+        choice = random.choice(list(self.variants.keys()))
+        word_lengths = {
+            '55555': [5, 5, 5, 5, 5],
+            '4777': [4, 7, 7, 7],
+            '6667': [6, 6, 6, 7],
+            '5677': [5, 6, 7, 7],
+            '5578': [5, 5, 7, 8],
+            '4588': [4, 5, 8, 8]
+        }
+        self.place = choice
+        self.searchWords(word_lengths[choice], choice)
 #-----------------------------------------------------------------------------------------------------------------------
 
-    def searchWords55555(self):
+    def searchWords(self, word_lengths, variant_key):
         with open("words.txt", 'r', encoding='utf-8') as file:
             text = file.read()
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            random_five_word = self.selectRandomWords55555(five_letter_word)
-            self.delenie55555(random_five_word)
-            self.zapolnenie55555()
+            words = {length: re.findall(r'\b\w{' + str(length) + r'}\b', text) for length in word_lengths}
+            selected_words = self.selectRandomWords(words, variant_key)
+            if isinstance(selected_words, dict):
+                self.delenie(selected_words, variant_key)
+                self.zapolnenie(variant_key)
+            else:
+                # Handle the error message returned by selectRandomWords
+                print(selected_words)
 
-    def selectRandomWords55555(self, five_letter_word):
-        if len(five_letter_word) < 5:
-            return ["Не хватает слов"]
-        return random.sample(five_letter_word, 5)
+    def selectRandomWords(self, words, variant_key):
+        selected_words = {}
+        if variant_key == '4777':
+            if len(words[4]) < 1 or len(words[7]) < 3:
+                return {"Не хватает слов1"}
+            selected_words[4] = random.choice(words[4])
+            selected_words[7] = random.sample(words[7], 3)
+        elif variant_key == '55555':
+            if len(words[5]) < 5:
+                return {'Не хватает слов2'}
+            selected_words[5] = random.sample(words[5], 5)
+        elif variant_key == '6667':
+            if len(words[6]) < 3 or len(words[7]) < 1:
+                return {'Не хватает слов3'}
+            selected_words[6] = random.sample(words[6], 3)
+            selected_words[7] = random.choice(words[7])
+        elif variant_key == '5677':
+            if len(words[5]) < 1 or len (words[6]) < 1 or len(words[7]) < 2:
+                return {"Не хватает слов4"}
+            selected_words[5] = random.choice(words[5])
+            selected_words[6] = random.choice(words[6])
+            selected_words[7] = random.sample(words[7], 2)
+        elif variant_key == '5578':
+            if len(words[5]) < 2 or len(words[7]) < 1 or len(words[8]) < 1:
+                return {"Не хватает слов5"}
+            selected_words[5] = random.sample(words[5], 2)
+            selected_words[7] = random.choice(words[7])
+            selected_words[8] = random.choice(words[8])
+        elif variant_key == '4588':
+            if len(words[4]) < 1 or len(words[5]) < 1 or len(words[8]) < 2:
+                return {"Не хватает слов6"}
+            selected_words[4] = random.choice(words[4])
+            selected_words[5] = random.choice(words[5])
+            selected_words[8] = random.sample(words[8], 2)
+        else:
+            return {"Неизвестный вариант"}
+        return selected_words
 
-    def delenie55555(self, five_word):
-        if len(five_word) < 5:
-            print('delenie55555')
+    def delenie(self, selected_words, variant_key):
+        self.positions[variant_key] = self.variants[variant_key]
+        self.letters[variant_key] = []
+       # if variant_key == '55555':
+       #     random_variants = random.choice(self.variants['55555'])
+       # elif variant_key == '4777':
+       #     random_variants = random.choice(self.variants['4777'])
+       # elif variant_key == '6667':
+       #    random_variants = random.choice(self.variants['6667'])
+       # elif variant_key == '5677':
+       #     random_variants = random.choice(self.variants['5677'])
+       # elif variant_key == '5578':
+       #     random_variants = random.choice(self.variants['5578'])
+       # elif variant_key == '4588':
+       #     random_variants = random.choice(self.variants['4588'])
+       # self.positions[variant_key] = random_variants
+       # self.letters[variant_key] = []
 
-        self.positions55555 = random.choice(self.variants55555)
 
-        for word in five_word:
-            self.letters55555.extend(list(word))
+        for word_list in selected_words.values():
+            if isinstance(word_list, list):
+                for word in word_list:
+                    self.letters[variant_key].extend(list(word))
+            else:
+                self.letters[variant_key].extend(list(word_list))
 
-    def zapolnenie55555(self):
-        if len(self.letters55555) != len(self.positions55555):
+    def zapolnenie(self, variant_key):
+        if len(self.letters[variant_key]) != len(self.positions[variant_key]):
             print("Количество букв и позиций должно быть одинаковым.")
+            print(self.positions, self.letters)
             return
 
-        for i in range(len(self.letters55555)):
-            row, col = self.positions55555[i]
-            item = QTableWidgetItem(self.letters55555[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def searchWords4777(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_four_word, random_seven_word = self.selectRandomWords4777(four_letter_word, seven_letter_word)
-            self.delenie4777(random_four_word, random_seven_word)
-            self.zapolnenie4777()
-
-    def selectRandomWords4777(self, four_letter_word, seven_letter_word):
-        if len(four_letter_word) < 1 or len(seven_letter_word) < 3:
-            return ["Не хватает слов"]
-        return random.choice(four_letter_word), random.sample(seven_letter_word, 3)
-
-    def delenie4777(self, four_word, seven_word):
-        if len(four_word ) < 1 or len(seven_word) < 3:
-            print('delenie4777')
-
-        self.positions4777 = random.choice(self.variants4777)
-
-        self.letters4777.extend(list(four_word))
-        for word in seven_word:
-            self.letters4777.extend(list(word))
-
-    def zapolnenie4777(self):
-        if len(self.letters4777) != len(self.positions4777):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters4777)):
-            row, col = self.positions4777[i]
-            item = QTableWidgetItem(self.letters4777[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def searchWords6667(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            six_letter_word = re.findall(r'\b\w{6}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_six_word, random_seven_word = self.selectRandomWords6667(six_letter_word, seven_letter_word)
-            self.delenie6667(random_six_word, random_seven_word)
-            self.zapolnenie6667()
-
-    def selectRandomWords6667(self, six_letter_word, seven_letter_word):
-        if len(six_letter_word) < 3 or len(seven_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.sample(six_letter_word, 3), random.choice(seven_letter_word)
-
-    def delenie6667(self, six_word, seven_word):
-        if len(six_word) < 3 or len(seven_word) < 1:
-            print('delenie6667')
-
-        self.positions6667 = random.choice(self.variants6667)
-
-        for word in six_word:
-            self.letters6667.extend(list(word))
-        self.letters6667.extend(list(seven_word))
-
-    def zapolnenie6667(self):
-        if len(self.letters6667) != len(self.positions6667):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters6667)):
-            row, col = self.positions6667[i]
-            item = QTableWidgetItem(self.letters6667[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def searchWords5677(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            six_letter_word = re.findall(r'\b\w{6}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            random_five_word, random_six_word, random_seven_word = \
-                self.selectRandomWords5677(five_letter_word, six_letter_word, seven_letter_word)
-            self.delenie5677(random_five_word, random_six_word, random_seven_word)
-            self.zapolnenie5677()
-
-    def selectRandomWords5677(self, five_letter_word, six_letter_word, seven_letter_word):
-        if len(five_letter_word) < 1 or len(six_letter_word) < 1 or len(seven_letter_word) < 2:
-            return ["Не хватает слов"]
-        return random.choice(five_letter_word), random.choice(six_letter_word),\
-            random.sample(seven_letter_word, 2)
-
-    def delenie5677(self, five_word, six_word, seven_word):
-        if len(five_word) < 1 or len(six_word) < 1 or len(seven_word) < 2:
-            print('delenie5677')
-
-        self.positions5677 = random.choice(self.variants5677)
-
-        self.letters5677.extend(list(five_word))
-        self.letters5677.extend(list(six_word))
-        for word in seven_word:
-            self.letters5677.extend(list(word))
-
-    def zapolnenie5677(self):
-        if len(self.letters5677) != len(self.positions5677):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters5677)):
-            row, col = self.positions5677[i]
-            item = QTableWidgetItem(self.letters5677[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def searchWords5578(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            seven_letter_word = re.findall(r'\b\w{7}\b', text)
-            eight_letter_word = re.findall(r'\b\w{8}\b', text)
-            random_five_word, random_eight_word, random_seven_word = \
-                self.selectRandomWords5578(five_letter_word, eight_letter_word, seven_letter_word)
-            self.delenie5578(random_five_word, random_eight_word, random_seven_word)
-            self.zapolnenie5578()
-
-    def selectRandomWords5578(self, five_letter_word, eight_letter_word, seven_letter_word):
-        if len(five_letter_word) < 2 or len(eight_letter_word) < 1 or len(seven_letter_word) < 1:
-            return ["Не хватает слов"]
-        return random.sample(five_letter_word, 2), random.choice(eight_letter_word),\
-            random.choice(seven_letter_word)
-
-    def delenie5578(self, five_word, eight_word, seven_word):
-        if len(five_word) < 2 or len(eight_word) < 1 or len(seven_word) < 1:
-            print('delenie5578')
-
-        self.positions5578 = random.choice(self.variants5578)
-
-        for word in five_word:
-            self.letters5578.extend(list(word))
-        self.letters5578.extend(list(seven_word))
-        self.letters5578.extend(list(eight_word))
-
-    def zapolnenie5578(self):
-        if len(self.letters5578) != len(self.positions5578):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters5578)):
-            row, col = self.positions5578[i]
-            item = QTableWidgetItem(self.letters5578[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-
-    def searchWords4588(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            four_letter_word = re.findall(r'\b\w{4}\b', text)
-            five_letter_word = re.findall(r'\b\w{5}\b', text)
-            eight_letter_word = re.findall(r'\b\w{8}\b', text)
-            random_four_word, random_five_word, random_eight_word = \
-                self.selectRandomWords4588(four_letter_word, five_letter_word, eight_letter_word)
-            self.delenie4588(random_four_word, random_five_word, random_eight_word)
-            self.zapolnenie4588()
-
-    def selectRandomWords4588(self, four_letter_word, five_letter_word, eight_letter_word):
-        if len(four_letter_word) < 1 or len(five_letter_word) < 1 or len(eight_letter_word) < 2:
-            return ["Не хватает слов"]
-        return random.choice(four_letter_word), random.choice(five_letter_word),\
-            random.sample(eight_letter_word, 2)
-
-
-    def delenie4588(self, four_word, five_word, eight_word):
-        if len(four_word) < 1 or len(five_word) < 1 or len(eight_word) < 2:
-            print('delenie4588')
-
-        self.positions4588 = random.choice(self.variants4588)
-
-        self.letters4588.extend(list(four_word))
-        self.letters4588.extend(list(five_word))
-        for word in eight_word:
-            self.letters4588.extend(list(word))
-
-    def zapolnenie4588(self):
-        if len(self.letters4588) != len(self.positions4588):
-            print("Количество букв и позиций должно быть одинаковым.")
-            return
-
-        for i in range(len(self.letters4588)):
-            row, col = self.positions4588[i]
-            item = QTableWidgetItem(self.letters4588[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-
+        # Ensure that each letter is placed at the corresponding position
+        for i, (row, col) in enumerate(self.positions[variant_key]):
+            if i < len(self.letters[variant_key]):
+                letter = self.letters[variant_key][i]
+                item = QTableWidgetItem(letter)
+                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.ui.tableWidget.setItem(row, col, item)
 
     def back_to_gamelevels(self):
         self.game_levels = GameLevels(self.nickname)
