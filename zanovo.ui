@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>374</width>
-    <height>324</height>
+    <height>369</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -122,7 +122,7 @@ border: 1px solid #b1b1b1;
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,30,30,30">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,30,30,30,30">
       <property name="spacing">
        <number>20</number>
       </property>
@@ -238,6 +238,24 @@ border: 1px solid #b1b1b1;
         </property>
         <property name="text">
          <string>ВЫБОР УРОВНЯ</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="mainmenu">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>В ГЛАВНОЕ МЕНЮ</string>
         </property>
        </widget>
       </item>

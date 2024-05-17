@@ -120,7 +120,7 @@ border-radius: 10px;
 border: 1px solid #b1b1b1;
 }</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0" columnstretch="0,0,0">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0" columnstretch="0,0">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
@@ -137,131 +137,12 @@ border: 1px solid #b1b1b1;
      <number>609</number>
     </property>
     <property name="horizontalSpacing">
-     <number>50</number>
+     <number>20</number>
     </property>
     <property name="verticalSpacing">
      <number>150</number>
     </property>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="back">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>50</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>14</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>НАЗАД</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="music">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>50</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>14</height>
-       </size>
-      </property>
-      <property name="baseSize">
-       <size>
-        <width>0</width>
-        <height>1</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>ВКЛ/ВЫКЛ МУЗЫКУ</string>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>16</width>
-        <height>16</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="countlevel">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>50</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>14</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="tabletTracking">
-       <bool>true</bool>
-      </property>
-      <property name="contextMenuPolicy">
-       <enum>Qt::PreventContextMenu</enum>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>ОТ 3 ДО 7 БУКВ</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="3" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+    <item row="1" column="0" colspan="2" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
      <widget class="QTableWidget" name="tableWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -286,7 +167,7 @@ border: 1px solid #b1b1b1;
       </property>
       <property name="font">
        <font>
-        <pointsize>24</pointsize>
+        <pointsize>30</pointsize>
        </font>
       </property>
       <property name="layoutDirection">
@@ -294,6 +175,9 @@ border: 1px solid #b1b1b1;
       </property>
       <property name="autoScroll">
        <bool>true</bool>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
       </property>
       <property name="rowCount">
        <number>4</number>
@@ -350,6 +234,80 @@ border: 1px solid #b1b1b1;
         <string/>
        </property>
       </item>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="back">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>14</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>НАЗАД</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="music">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>550</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>14</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>0</width>
+        <height>1</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>УРОВЕНЬ 4X4: КОЛИЧЕСТВО БУКВ В СЛОВАХ ОТ 3 ДО 7</string>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>16</width>
+        <height>16</height>
+       </size>
+      </property>
      </widget>
     </item>
    </layout>

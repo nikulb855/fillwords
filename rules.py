@@ -57,7 +57,13 @@ class Ui_rules(object):
 "}\n"
 "\n"
 "\n"
+"QPushButton:hover{\n"
+"background-color: rgb(208, 208, 208); \n"
+"}\n"
 "\n"
+"QPushButton:pressed{\n"
+"background-color: #888;\n"
+"}\n"
 "")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -70,6 +76,12 @@ class Ui_rules(object):
         self.textEdit.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.textEdit.setObjectName("textEdit")
         self.verticalLayout.addWidget(self.textEdit)
+        self.back = QtWidgets.QPushButton(self.centralwidget)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.back.setFont(font)
+        self.back.setObjectName("back")
+        self.verticalLayout.addWidget(self.back)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         rules.setCentralWidget(self.centralwidget)
 
@@ -85,4 +97,14 @@ class Ui_rules(object):
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:28pt;\">ПРАВИЛА</span></p>\n"
 "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:28pt;\"><br /></p></body></html>"))
+        self.back.setText(_translate("rules", "ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ"))
 
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    rules = QtWidgets.QMainWindow()
+    ui = Ui_rules()
+    ui.setupUi(rules)
+    rules.show()
+    sys.exit(app.exec_())

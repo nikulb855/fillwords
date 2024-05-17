@@ -114,9 +114,12 @@ border-radius: 10px;
 border: 1px solid #b1b1b1;
 }
 
-QTextEdit {
-    text-align: center;
-}</string>
+QTextEdit{
+background-color: white;
+border-radius: 10px;
+border: 1px solid #b1b1b1;
+}
+</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
@@ -125,6 +128,15 @@ QTextEdit {
        <font>
         <pointsize>15</pointsize>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">
+QTextEdit{
+background-color: white;
+border-radius: 10px;
+border: 1px solid #b1b1b1;
+}
+</string>
       </property>
       <property name="html">
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;

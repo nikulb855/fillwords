@@ -70,9 +70,12 @@ class Ui_Rating(object):
 "border: 1px solid #b1b1b1;\n"
 "}\n"
 "\n"
-"QTextEdit {\n"
-"    text-align: center;\n"
-"}")
+"QTextEdit{\n"
+"background-color: white;\n"
+"border-radius: 10px;\n"
+"border: 1px solid #b1b1b1;\n"
+"}\n"
+"")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -80,6 +83,13 @@ class Ui_Rating(object):
         font = QtGui.QFont()
         font.setPointSize(15)
         self.label.setFont(font)
+        self.label.setStyleSheet("\n"
+"QTextEdit{\n"
+"background-color: white;\n"
+"border-radius: 10px;\n"
+"border: 1px solid #b1b1b1;\n"
+"}\n"
+"")
         self.label.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label.setObjectName("label")
         self.verticalLayout_2.addWidget(self.label)

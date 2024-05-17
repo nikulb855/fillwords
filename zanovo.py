@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:/Users/Victus/PycharmProjects/Gme/zanovo.ui'
+# Form implementation generated from reading ui file 'C:\Users\Victus\PycharmProjects\Gme\zanovo.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_zanovo_2(object):
     def setupUi(self, zanovo_2):
         zanovo_2.setObjectName("zanovo_2")
-        zanovo_2.resize(374, 324)
+        zanovo_2.resize(374, 369)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -129,6 +129,17 @@ class Ui_zanovo_2(object):
         self.glmenu.setFont(font)
         self.glmenu.setObjectName("glmenu")
         self.verticalLayout.addWidget(self.glmenu)
+        self.mainmenu = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.mainmenu.sizePolicy().hasHeightForWidth())
+        self.mainmenu.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.mainmenu.setFont(font)
+        self.mainmenu.setObjectName("mainmenu")
+        self.verticalLayout.addWidget(self.mainmenu)
         self.exit = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -144,6 +155,7 @@ class Ui_zanovo_2(object):
         self.verticalLayout.setStretch(2, 30)
         self.verticalLayout.setStretch(3, 30)
         self.verticalLayout.setStretch(4, 30)
+        self.verticalLayout.setStretch(5, 30)
         self.verticalLayout_2.addLayout(self.verticalLayout)
         zanovo_2.setCentralWidget(self.centralwidget)
 
@@ -156,6 +168,7 @@ class Ui_zanovo_2(object):
         self.label.setText(_translate("zanovo_2", "УРОВЕНЬ ПРОЙДЕН"))
         self.zanovo.setText(_translate("zanovo_2", "ЗАНОВО"))
         self.glmenu.setText(_translate("zanovo_2", "ВЫБОР УРОВНЯ"))
+        self.mainmenu.setText(_translate("zanovo_2", "В ГЛАВНОЕ МЕНЮ"))
         self.exit.setText(_translate("zanovo_2", "ВЫЙТИ"))
 
 

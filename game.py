@@ -69,13 +69,17 @@ class MainMenu(QMainWindow):
     def open_rules(self):
         self.rules_window = RulesWindow()
         self.rules_window.show()
-
+        self.hide()
 class RulesWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_rules()
         self.ui.setupUi(self)
-
+        self.ui.back.clicked.connect(self.backtomainmenu)
+    def backtomainmenu(self):
+        self.main = MainMenu()
+        self.main.show()
+        self.hide()
 class RatingMenu(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -150,13 +154,13 @@ class Zanovo(QMainWindow):
         super().__init__()
         self.ui = Ui_zanovo_2()
         self.ui.setupUi(self)
-        self.ui.glmenu.clicked.connect(self.back_to_mainmenu)
+        self.ui.glmenu.clicked.connect(self.back_to_glmenu)
         self.ui.zanovo.clicked.connect(self.open_secwindow)
         self.ui.exit.clicked.connect(self.close)
         self.nickname = nickname
         self.level = selected_level
         self.update_rating_label()
-
+        self.ui.mainmenu.clicked.connect(self.backtomainmenu)
 
     def update_rating_label(self):
         word = ''
@@ -175,11 +179,15 @@ class Zanovo(QMainWindow):
                     break
         if word:
             self.ui.label_2.setText(f"Сейчас у вас уже {score} {word}!")
-    def back_to_mainmenu(self):
+    def back_to_glmenu(self):
         self.gamelevels = GameLevels(self.nickname)
         self.gamelevels.show()
         self.hide()
 
+    def backtomainmenu(self):
+        self.main = MainMenu()
+        self.main.show()
+        self.hide()
     def open_secwindow(self):
         if self.level == 1:
             self.sec_window = SecWindow3x3(self.nickname)
@@ -195,38 +203,27 @@ class SecWindow3x3(QMainWindow):
         self.ui = Ui_secwindow3x3()
         self.ui.setupUi(self)
         self.ui.back.clicked.connect(self.back_to_gamelevels)
-        self.letters3x3 = []
-        self.positions3x3 = []
-        self.letters3and6 = []
-        self.positions3and6 = []
-        self.letters4and5 = []
-        self.positions4and5 = []
+        self.letters = {}
+        self.positions = {}
 #-----------------------------------------------------------------------------------------------------------------------
                                                 #Позиции на поле
-        self.variants3x3 = [
-            [(1, 0), (0, 0), (0, 1), (1, 1), (1, 2), (0, 2), (2, 0), (2, 1), (2, 2)],
-            [(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
-            [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-        ]
-        self.variants3and6 = [
-            [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
-           # [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-           # [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
-        ]
-        self.variants4and5 = [
-            [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0), (2, 0)]
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
-            #[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)]
-        ]
+        self.variants = {
+            "333": [
+                [(1, 0), (0, 0), (0, 1), (1, 1), (1, 2), (0, 2), (2, 0), (2, 1), (2, 2)],
+                [(0, 0), (1, 0), (2, 0), (1, 1), (0, 1), (0, 2), (2, 1), (2, 2), (1, 2)],
+                [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+            ],
+            '36': [
+                [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (2, 0)],
+                [(2, 2), (1, 2), (0, 2), (1, 1), (2, 1), (2, 0), (1, 0), (0, 0), (0, 1)],
+                [(1, 1), (1, 0), (0, 0), (2, 0), (2, 1), (2, 2), (1, 2), (0, 2), (0, 1)]
+            ],
+            '45': [
+                [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0), (2, 0)],
+                [(1, 1), (0, 1), (0, 2), (1, 2), (0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
+                [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), (1, 1), (0, 1), (0, 2)]
+            ]
+        }
         self.randomWordsPlace()
 #-----------------------------------------------------------------------------------------------------------------------
                                           #Выделение ячеек
@@ -248,8 +245,8 @@ class SecWindow3x3(QMainWindow):
                     item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
 
     def on_item_entered(self, item):
-        if item.background().color() != QColor(0, 255, 0):
-            item.setBackground(QColor(255, 0, 0))
+        if item.background().color() != QColor(153, 102, 255):
+            item.setBackground(QColor(204, 204, 255))
             self.highlighted_items.append(item)
 
 
@@ -257,7 +254,7 @@ class SecWindow3x3(QMainWindow):
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
-                if item.background().color() != QColor(0, 255, 0):
+                if item.background().color() != QColor(153, 102, 255):
                     return
         self.score += 1
         self.update_rating()
@@ -293,7 +290,7 @@ class SecWindow3x3(QMainWindow):
 
     def reset_colors(self):
         for item in self.highlighted_items:
-            if item.background().color() != QColor(0, 255, 0):
+            if item.background().color() != QColor(153, 102, 255):
                 item.setBackground(QColor(255, 255, 255))
         self.highlighted_items.clear()
 
@@ -301,7 +298,7 @@ class SecWindow3x3(QMainWindow):
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
             item = self.ui.tableWidget.itemAt(event.pos())
-            if item is not None and item.background().color() == QColor(0, 255, 0):
+            if item is not None and item.background().color() == QColor(153, 102, 255):
                 self.mouse_pressed = True
                 self.previous_item_pos = event.pos()
                 return True
@@ -314,8 +311,8 @@ class SecWindow3x3(QMainWindow):
             item = self.ui.tableWidget.itemAt(event.pos())
             previous_item = self.ui.tableWidget.itemAt(self.previous_item_pos)
             if item is not None and previous_item is not None:
-                if previous_item.background().color() != QColor(0, 255, 0) and \
-                        item.background().color() != QColor(0, 255, 0):
+                if previous_item.background().color() != QColor(153, 102, 255) and \
+                        item.background().color() != QColor(153, 102, 255):
                     drag = QDrag(self)
                     mime_data = QMimeData()
                     drag.setMimeData(mime_data)
@@ -337,7 +334,7 @@ class SecWindow3x3(QMainWindow):
                     selected_positions == variants_positions[3:6] or \
                     selected_positions == variants_positions[6:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -346,7 +343,7 @@ class SecWindow3x3(QMainWindow):
             variants_positions = self.positions['36']
             if selected_positions == variants_positions[:3] or selected_positions == variants_positions[3:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -355,7 +352,7 @@ class SecWindow3x3(QMainWindow):
             variants_positions = self.positions['45']
             if selected_positions == variants_positions[:4] or selected_positions == variants_positions[4:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -363,120 +360,80 @@ class SecWindow3x3(QMainWindow):
 #-----------------------------------------------------------------------------------------------------------------------
                                         # Случайный выбор расстановки и количества слов
     def randomWordsPlace(self):
-        choice = random.choice(['3and6', '4and5', '3x3'])
-        if choice == '3and6':
-            self.place = self.searchWords3and6
-        elif choice == '4and5':
-            self.place = self.searchWords4and5
-        elif choice == '3x3':
-            self.place = self.searchThreeLetterWords
+        choice = random.choice(list(self.variants.keys()))
+        word_lengths = {
+            '333': [3, 3, 3],
+            '36': [3, 6],
+            '45': [4, 5]
+        }
+        self.place = choice
+        self.searchWords(word_lengths[choice], choice)
 
-        self.place()
+    # -----------------------------------------------------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------------------------------------------------
-                                            #3 слова по 3 буквы в каждом
-    def searchThreeLetterWords(self):
+    def searchWords(self, word_lengths, variant_key):
         with open("words.txt", 'r', encoding='utf-8') as file:
             text = file.read()
-            three_letter_words = re.findall(r'\b\w{3}\b', text)
-            random_words = self.selectRandomWords(three_letter_words)
-            self.delenie3po3(random_words)
-            self.zapolnenie3po3()
+            words = {length: re.findall(r'\b\w{' + str(length) + r'}\b', text) for length in word_lengths}
+            selected_words = self.selectRandomWords(words, variant_key)
+            if isinstance(selected_words, dict):
+                self.delenie(selected_words, variant_key)
+                self.zapolnenie(variant_key)
+            else:
+                # Handle the error message returned by selectRandomWords
+                print(selected_words)
 
-    def selectRandomWords(self, words):
-        if len(words) < 3:
-            return ["Не хватает слов"]
-        return random.sample(words, 3)
+    def selectRandomWords(self, words, variant_key):
+        selected_words = {}
+        if variant_key == '333':
+            if len(words[3]) < 3:
+                return {"Не хватает слов1"}
+            selected_words[4] = random.sample(words[3], 3)
+        elif variant_key == '36':
+            if len(words[3]) < 1 or len(words[6]) < 1:
+                return {'Не хватает слов2'}
+            selected_words[3] = random.choice(words[3])
+            selected_words[5] = random.choice(words[6])
+        elif variant_key == '45':
+            if len(words[4]) < 1 or len(words[5]) < 1:
+                return {'Не хватает слов3'}
+            selected_words[4] = random.choice(words[4])
+            selected_words[5] = random.choice(words[5])
+        else:
+            return {"Неизвестный вариант"}
+        return selected_words
 
-    def delenie3po3(self, words):
-        if len(words) != 3:
-            print("Ошибка, не 3 слова")
+    def delenie(self, selected_words, variant_key):
+        if variant_key == '333':
+            random_variants = random.choice(self.variants['333'])
+        elif variant_key == '36':
+            random_variants = random.choice(self.variants['36'])
+        elif variant_key == '45':
+            random_variants = random.choice(self.variants['45'])
+        self.positions[variant_key] = random_variants
+        self.letters[variant_key] = []
+
+        for word_list in selected_words.values():
+            if isinstance(word_list, list):
+                for word in word_list:
+                    self.letters[variant_key].extend(list(word))
+            else:
+                self.letters[variant_key].extend(list(word_list))
+
+        print(variant_key)
+
+    def zapolnenie(self, variant_key):
+        if len(self.letters[variant_key]) != len(self.positions[variant_key]):
+            print("Количество букв и позиций должно быть одинаковым.")
+            print(self.positions, self.letters)
             return
 
-        self.positions3x3 = random.choice(self.variants3x3)
-
-        for word in words:
-            self.letters3x3.extend(list(word))
-    def zapolnenie3po3(self):
-        if len(self.letters3x3) != len(self.positions3x3):
-            print("Количество букв и позиций должно быть одинаковым333.")
-            return
-
-        for i in range(len(self.letters3x3)):
-            row, col = self.positions3x3[i]
-            item = QTableWidgetItem(self.letters3x3[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-#-----------------------------------------------------------------------------------------------------------------------
-                                        #2 слова, 1-ое 3 буквы 2-ое 6 букв
-    def searchWords3and6(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            three_letter_words = re.findall(r'\b\w{3}\b', text)
-            six_letter_words = re.findall(r'\b\w{6}\b', text)
-            random_three_word, random_six_word = self.selectRandomWords3and6(three_letter_words, six_letter_words)
-            self.delenie3and6(random_three_word, random_six_word)
-            self.zapolnenie3and6()
-    def selectRandomWords3and6(self, three_letter_words, six_letter_words):
-        if len(three_letter_words) < 1 or len(six_letter_words) < 1:
-            return ["Не хватает слов"]
-        return random.choice(three_letter_words), random.choice(six_letter_words)
-
-
-    def delenie3and6(self, three_word, six_word):
-        if len(three_word) < 1 or len(six_word) < 1:
-            print("Ошибка delenie3and6")
-
-        self.positions3and6 = random.choice(self.variants3and6)
-
-        self.letters3and6.extend(list(three_word))
-        self.letters3and6.extend(list(six_word))
-    def zapolnenie3and6(self):
-        if len(self.letters3and6) != len(self.positions3and6):
-            print("Количество букв и позиций должно быть одинаковым1.")
-            return
-
-        for i in range(len(self.letters3and6)):
-            row, col = self.positions3and6[i]
-            item = QTableWidgetItem(self.letters3and6[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
-
-#-----------------------------------------------------------------------------------------------------------------------
-                                            #2 слова, 1-ое 4 буквы 2-ое 5 букв
-    def searchWords4and5(self):
-        with open("words.txt", 'r', encoding='utf-8') as file:
-            text = file.read()
-            four_letter_words = re.findall(r'\b\w{4}\b', text)
-            five_letter_words = re.findall(r'\b\w{5}\b', text)
-            random_four_word, random_five_word = self.selectRandomWords4and5(four_letter_words, five_letter_words)
-            self.delenie4and5(random_four_word, random_five_word)
-            self.zapolnenie4and5()
-
-    def selectRandomWords4and5(self, four_letter_words, five_letter_words):
-        if len(four_letter_words) < 1 or len(five_letter_words) < 1:
-            return ["Не хватает слов"]
-        return random.choice(four_letter_words), random.choice(five_letter_words)
-
-
-    def delenie4and5(self, four_word, five_word):
-        if len(four_word) < 1 or len(five_word) < 1:
-            print("Ошибка delenie4and5")
-
-        self.positions4and5 = random.choice(self.variants4and5)
-
-        self.letters4and5.extend(list(four_word))
-        self.letters4and5.extend(list(five_word))
-    def zapolnenie4and5(self):
-        if len(self.letters4and5) != len(self.positions4and5):
-            print("Количество букв и позиций должно быть одинаковым2.")
-            return
-
-        for i in range(len(self.letters4and5)):
-            row, col = self.positions4and5[i]
-            item = QTableWidgetItem(self.letters4and5[i])
-            item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-            self.ui.tableWidget.setItem(row, col, item)
+        for i, (row, col) in enumerate(self.positions[variant_key]):
+            if i < len(self.letters[variant_key]):
+                letter = self.letters[variant_key][i]
+                item = QTableWidgetItem(letter)
+                item.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                self.ui.tableWidget.setItem(row, col, item)
 #-----------------------------------------------------------------------------------------------------------------------
     def back_to_gamelevels(self):
         self.gamelevels = GameLevels(self.nickname)
@@ -528,8 +485,8 @@ class SecWindow4x4(QMainWindow):
             '3337': [
                 [(0, 0), (0, 1), (0, 2), (2, 3), (3, 3), (3, 2), (2, 0), (3, 0),
                  (3, 1), (0, 3), (1, 3), (1, 2), (2, 2), (2, 1), (1, 1), (1, 0)],
-                [(0, 2), (0, 1), (0, 0), (1, 1), (1, 2), (2, 2), (0, 1), (0, 2),
-                 (0, 3), (2, 1), (3, 1), (3, 2), (3, 3), (2, 3), (1, 3), (0, 3)]
+                [(0, 2), (0, 1), (0, 0), (1, 1), (1, 2), (2, 2), (1, 0), (2, 0),
+                 (3, 0), (2, 1), (3, 1), (3, 2), (3, 3), (2, 3), (1, 3), (0, 3)]
             ],
             '4444': [
                 [(0, 0), (0, 1), (0, 2), (0, 3), (3, 2), (3, 3), (2, 3), (1, 3),
@@ -559,15 +516,15 @@ class SecWindow4x4(QMainWindow):
                     item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
 
     def on_item_entered(self, item):
-        if item.background().color() != QColor(0, 255, 0):
-            item.setBackground(QColor(255, 0, 0))
+        if item.background().color() != QColor(153, 102, 255):
+            item.setBackground(QColor(204, 204, 255))
             self.highlighted_items.append(item)
 
     def check_all_cells_green(self):
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
-                if item.background().color() != QColor(0, 255, 0):
+                if item.background().color() != QColor(153, 102, 255):
                     return
         self.score += 2
         self.update_rating()
@@ -603,7 +560,7 @@ class SecWindow4x4(QMainWindow):
 
     def reset_colors(self):
         for item in self.highlighted_items:
-            if item.background().color() != QColor(0, 255, 0):
+            if item.background().color() != QColor(153, 102, 255):
                 item.setBackground(QColor(255, 255, 255))
         self.highlighted_items.clear()
 
@@ -612,7 +569,7 @@ class SecWindow4x4(QMainWindow):
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
             item = self.ui.tableWidget.itemAt(event.pos())
-            if item is not None and item.background().color() == QColor(0, 255, 0):
+            if item is not None and item.background().color() == QColor(153, 102, 255):
                 self.mouse_pressed = True
                 self.previous_item_pos = event.pos()
                 return True
@@ -625,8 +582,8 @@ class SecWindow4x4(QMainWindow):
             item = self.ui.tableWidget.itemAt(event.pos())
             previous_item = self.ui.tableWidget.itemAt(self.previous_item_pos)
             if item is not None and previous_item is not None:
-                if previous_item.background().color() != QColor(0, 255, 0) and \
-                        item.background().color() != QColor(0, 255, 0):
+                if previous_item.background().color() != QColor(153, 102, 255) and \
+                        item.background().color() != QColor(153, 102, 255):
                     drag = QDrag(self)
                     mime_data = QMimeData()
                     drag.setMimeData(mime_data)
@@ -651,7 +608,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[6:10] or \
                     selected_positions == variants_positions[10:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -664,7 +621,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[7:11] or \
                     selected_positions == variants_positions[11:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -676,7 +633,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[4:9] or \
                     selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -689,7 +646,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[6:11] or \
                     selected_positions == variants_positions[11:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -701,7 +658,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[3:9] or \
                     selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -714,7 +671,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[6:9] or \
                     selected_positions == variants_positions[9:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -727,7 +684,7 @@ class SecWindow4x4(QMainWindow):
                     selected_positions == variants_positions[8:12] or \
                     selected_positions == variants_positions[12:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -830,6 +787,8 @@ class SecWindow4x4(QMainWindow):
             else:
                 self.letters[variant_key].extend(list(word_list))
 
+        print(variant_key)
+
     def zapolnenie(self, variant_key):
         if len(self.letters[variant_key]) != len(self.positions[variant_key]):
             print("Количество букв и позиций должно быть одинаковым.")
@@ -864,41 +823,79 @@ class SecWindow5x5(QMainWindow):
                  (4, 2), (4, 3), (4, 4), (3, 4), (2, 4),
                  (3, 2), (3, 1), (4, 1), (4, 0), (3, 0)],
 
-                [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
-                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
-                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
-                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0),
-                 (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+                [(2, 1), (1, 1), (1, 0), (0, 0), (0, 1),
+                 (0, 2), (1, 2), (2, 2), (3, 2), (3, 1),
+                 (1, 3), (0, 3), (0, 4), (1, 4), (2, 4),
+                 (2, 3), (3, 3), (3, 4), (4, 4), (4, 3),
+                 (4, 2), (4, 1), (4, 0), (3, 0), (2, 0)]
                 ],
-            '4777': [(1, 1), (1, 2), (2, 2), (2, 1), (3, 0),
-                     (2, 0), (1, 0), (0, 0), (0, 1), (0, 2),
-                     (0, 3), (1, 3), (2, 3), (3, 3), (3, 4),
-                     (2, 4), (1, 4), (0, 4), (4, 0), (4, 1),
-                     (3, 1), (3, 2), (4, 2), (4, 3), (4, 4)],
+            '4777': [
+                [(1, 1), (1, 2), (2, 2), (2, 1), (3, 0),
+                 (2, 0), (1, 0), (0, 0), (0, 1), (0, 2),
+                 (0, 3), (1, 3), (2, 3), (3, 3), (3, 4),
+                 (2, 4), (1, 4), (0, 4), (4, 0), (4, 1),
+                 (3, 1), (3, 2), (4, 2), (4, 3), (4, 4)],
 
-            '6667': [(0, 0), (0, 1), (0, 2), (1, 2), (1, 1),
-                     (1, 0), (2, 1), (2, 0), (3, 0), (4, 0),
-                     (4, 1), (4, 2), (3, 1), (3, 2), (2, 2),
-                     (2, 3), (3, 3), (4, 3), (1, 3), (0, 3),
-                     (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)],
+                [(0, 1), (1, 1), (2, 1), (2, 2), (0, 2),
+                 (1, 2), (1, 3), (2, 3), (3, 3), (3, 2),
+                 (3, 1), (0, 0), (1, 0), (2, 0), (3, 0),
+                 (4, 0), (4, 1), (4, 2), (0, 3), (0, 4),
+                 (1, 4), (2, 4), (3, 4), (4, 4), (4, 3)]
+                ],
 
-            '5677': [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3),
-                     (3, 4), (4, 4), (4, 3), (3, 3), (2, 3),
-                     (2, 4), (1, 0), (0, 0), (0, 1), (0, 2),
-                     (0, 3), (0, 4), (1, 4), (4, 0), (4, 1),
-                     (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)],
+            '6667': [
+                [(0, 0), (0, 1), (0, 2), (1, 2), (1, 1),
+                 (1, 0), (2, 1), (2, 0), (3, 0), (4, 0),
+                 (4, 1), (4, 2), (3, 1), (3, 2), (2, 2),
+                 (2, 3), (3, 3), (4, 3), (1, 3), (0, 3),
+                 (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)],
 
-            '5578': [(3, 3), (2, 3), (1, 3), (1, 2), (1, 1),
-                     (1, 0), (2, 0), (2, 1), (2, 2), (3, 2),
-                     (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-                     (1, 4), (2, 4), (3, 1), (3, 0), (4, 0),
-                     (4, 1), (4, 2), (4, 3), (4, 4), (3, 4)],
+                [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                 (1, 4), (2, 4), (2, 3), (1, 3), (1, 2),
+                 (2, 2), (2, 1), (4, 0), (4, 1), (4, 2),
+                 (4, 3), (4, 4), (3, 4), (3, 3), (3, 2),
+                 (3, 1), (3, 0), (2, 0), (1, 0), (1, 1)]
+                ],
+            '5677': [
+                [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3),
+                 (3, 4), (4, 4), (4, 3), (3, 3), (2, 3),
+                 (2, 4), (1, 0), (0, 0), (0, 1), (0, 2),
+                 (0, 3), (0, 4), (1, 4), (4, 0), (4, 1),
+                 (4, 2), (3, 2), (3, 1), (3, 0), (2, 0)],
 
-            '4588': [(0, 3), (1, 3), (2, 3), (3, 3), (1, 1),
-                     (0, 1), (0, 2), (1, 2), (2, 2), (0, 0),
-                     (1, 0), (2, 0), (3, 0), (4, 0), (4, 1),
-                     (3, 1), (2, 1), (0, 4), (1, 4), (2, 4),
-                     (3, 4), (4, 4), (4, 3), (4, 2), (3, 2)]
+                [(0, 3), (1, 3), (2, 3), (3, 3), (3, 2),
+                 (1, 1), (0, 1), (0, 2), (1, 2), (2, 2),
+                 (2, 1), (0, 0), (1, 0), (2, 0), (3, 0),
+                 (4, 0), (4, 1), (3, 1), (4, 2), (4, 3),
+                 (4, 4), (3, 4), (2, 4), (1, 4), (0, 4)]
+                ],
+            '5578': [
+                [(3, 3), (2, 3), (1, 3), (1, 2), (1, 1),
+                 (1, 0), (2, 0), (2, 1), (2, 2), (3, 2),
+                 (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                 (1, 4), (2, 4), (3, 1), (3, 0), (4, 0),
+                 (4, 1), (4, 2), (4, 3), (4, 4), (3, 4)],
+
+                [(2, 3), (3, 3), (3, 2), (3, 1), (3, 0),
+                 (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                 (2, 2), (2, 1), (2, 0), (1, 0), (1, 1),
+                 (1, 2), (1, 3), (1, 4), (2, 4), (3, 4),
+                 (4, 4), (4, 3), (4, 2), (4, 1), (4, 0)]
+                ],
+
+            '4588': [
+                [(0, 3), (1, 3), (2, 3), (3, 3), (1, 1),
+                 (0, 1), (0, 2), (1, 2), (2, 2), (0, 0),
+                 (1, 0), (2, 0), (3, 0), (4, 0), (4, 1),
+                 (3, 1), (2, 1), (0, 4), (1, 4), (2, 4),
+                 (3, 4), (4, 4), (4, 3), (4, 2), (3, 2)],
+
+                [(1, 3), (1, 4), (0, 4), (0, 3), (3, 3),
+                 (3, 2), (3, 1), (3, 0), (4, 0), (0, 0),
+                 (1, 0), (2, 0), (2, 1), (1, 1), (0, 1),
+                 (0, 2), (1, 2), (2, 2), (2, 3), (2, 4),
+                 (3, 4), (4, 4), (4, 3), (4, 2), (4, 1)]
+                ]
         }
         self.randomWordsPlace()
 # -----------------------------------------------------------------------------------------------------------------------
@@ -921,15 +918,15 @@ class SecWindow5x5(QMainWindow):
                     item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
 
     def on_item_entered(self, item):
-        if item.background().color() != QColor(0, 255, 0):
-            item.setBackground(QColor(255, 0, 0))
+        if item.background().color() != QColor(153, 102, 255):
+            item.setBackground(QColor(204, 204, 255))
             self.highlighted_items.append(item)
 
     def check_all_cells_green(self):
         for row in range(self.ui.tableWidget.rowCount()):
             for col in range(self.ui.tableWidget.columnCount()):
                 item = self.ui.tableWidget.item(row, col)
-                if item.background().color() != QColor(0, 255, 0):
+                if item.background().color() != QColor(153, 102, 255):
                     return
         self.score += 3
         self.update_rating()
@@ -966,7 +963,7 @@ class SecWindow5x5(QMainWindow):
 
     def reset_colors(self):
         for item in self.highlighted_items:
-            if item.background().color() != QColor(0, 255, 0):
+            if item.background().color() != QColor(153, 102, 255):
                 item.setBackground(QColor(255, 255, 255))
         self.highlighted_items.clear()
 
@@ -975,7 +972,7 @@ class SecWindow5x5(QMainWindow):
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
             item = self.ui.tableWidget.itemAt(event.pos())
-            if item is not None and item.background().color() == QColor(0, 255, 0):
+            if item is not None and item.background().color() == QColor(153, 102, 255):
                 self.mouse_pressed = True
                 self.previous_item_pos = event.pos()
                 return True
@@ -988,8 +985,8 @@ class SecWindow5x5(QMainWindow):
             item = self.ui.tableWidget.itemAt(event.pos())
             previous_item = self.ui.tableWidget.itemAt(self.previous_item_pos)
             if item is not None and previous_item is not None:
-                if previous_item.background().color() != QColor(0, 255, 0) and \
-                        item.background().color() != QColor(0, 255, 0):
+                if previous_item.background().color() != QColor(153, 102, 255) and \
+                        item.background().color() != QColor(153, 102, 255):
                     drag = QDrag(self)
                     mime_data = QMimeData()
                     drag.setMimeData(mime_data)
@@ -1011,9 +1008,9 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[5:10] or \
                     selected_positions == variant_positions[10:15] or \
                     selected_positions == variant_positions[15:20] or \
-                    selected_positions == variant_positions[25:]:
+                    selected_positions == variant_positions[20:]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -1024,7 +1021,7 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[11:18] or \
                     selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -1035,7 +1032,7 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[12:18] or \
                     selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -1046,7 +1043,7 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[11:18] or \
                     selected_positions == variant_positions[18:25]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -1057,7 +1054,7 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[10:17] or \
                     selected_positions == variant_positions[17:25]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
 
@@ -1068,7 +1065,7 @@ class SecWindow5x5(QMainWindow):
                     selected_positions == variant_positions[9:17] or \
                     selected_positions == variant_positions[17:25]:
                 for item in self.highlighted_items:
-                    item.setBackground(QColor(0, 255, 0))
+                    item.setBackground(QColor(153, 102, 255))
             else:
                 self.reset_colors()
         self.highlighted_items.clear()
@@ -1138,23 +1135,20 @@ class SecWindow5x5(QMainWindow):
         return selected_words
 
     def delenie(self, selected_words, variant_key):
-        self.positions[variant_key] = self.variants[variant_key]
+        if variant_key == '55555':
+            random_variants = random.choice(self.variants['55555'])
+        elif variant_key == '4777':
+            random_variants = random.choice(self.variants['4777'])
+        elif variant_key == '6667':
+            random_variants = random.choice(self.variants['6667'])
+        elif variant_key == '5677':
+            random_variants = random.choice(self.variants['5677'])
+        elif variant_key == '5578':
+            random_variants = random.choice(self.variants['5578'])
+        elif variant_key == '4588':
+            random_variants = random.choice(self.variants['4588'])
+        self.positions[variant_key] = random_variants
         self.letters[variant_key] = []
-       # if variant_key == '55555':
-       #     random_variants = random.choice(self.variants['55555'])
-       # elif variant_key == '4777':
-       #     random_variants = random.choice(self.variants['4777'])
-       # elif variant_key == '6667':
-       #    random_variants = random.choice(self.variants['6667'])
-       # elif variant_key == '5677':
-       #     random_variants = random.choice(self.variants['5677'])
-       # elif variant_key == '5578':
-       #     random_variants = random.choice(self.variants['5578'])
-       # elif variant_key == '4588':
-       #     random_variants = random.choice(self.variants['4588'])
-       # self.positions[variant_key] = random_variants
-       # self.letters[variant_key] = []
-
 
         for word_list in selected_words.values():
             if isinstance(word_list, list):
@@ -1162,7 +1156,7 @@ class SecWindow5x5(QMainWindow):
                     self.letters[variant_key].extend(list(word))
             else:
                 self.letters[variant_key].extend(list(word_list))
-
+        print(variant_key)
     def zapolnenie(self, variant_key):
         if len(self.letters[variant_key]) != len(self.positions[variant_key]):
             print("Количество букв и позиций должно быть одинаковым.")
